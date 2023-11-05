@@ -1,9 +1,9 @@
 <?php
 session_start();
-require('./util/users.php'); // Inclure votre fichier de fonctions
+require('./util/users.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Récupération des données du formulaire
+    // Récupération des données du formulaire d'inscription du client
     $nom = $_POST['nom'];
     $prenom = $_POST['prenom'];
     $email = $_POST['email'];
@@ -13,24 +13,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Création d'un tableau avec les données du client
     $client = array($nom, $prenom, $email, $motDePasse, $addresse);
     
-    // Appel de la fonction d'inscription
     $clientId = addClient($client);
     
     // Vérification si l'inscription a réussi
     if ($clientId) {
-        // Redirigez l'utilisateur vers la page d'accueil avec son ID
         $_SESSION['clientID'] = $clientId;
         header("Location: index.php?clientID=$clientId");
         exit;
     } else {
-        // Affichez un message d'erreur en cas d'échec de l'inscription
         echo "L'inscription a échoué. Veuillez réessayer.";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <title>Inscription</title>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -44,26 +41,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
     <style> 
-        /* Made with love by Mutiullah Samim*/
         @import url('https://fonts.googleapis.com/css?family=Numans');
         html,body{
+
             background-image: url('https://getwallpapers.com/wallpaper/full/1/9/d/31242.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            height: 100%;
-            font-family: 'Numans', sans-serif;
+            display: flex;
+            justify-content: center; /* Centre la colonne horizontalement */
+            align-items: center; /* Centre la colonne verticalement */
+            height: 100vh; /* Utilise toute la hauteur de la fenêtre */
+            margin: 0;
         }
 
         .container{
-            height: 100%;
+           /* height: 100%; */
             align-content: center;
+            width: 50%; /* Divise la largeur en deux colonnes */
+            padding: 20px;
+        }
+
+        .container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto; /* Centre l'image horizontalement dans sa colonne */
         }
 
         .card{
-            height: 450px;
+            height: 580px;
             margin-top: auto;
             margin-bottom: auto;
-            width: 405px;
+            width: 430px;
             background-color: rgba(0,0,0,0.5) !important;
         }
 
@@ -90,18 +97,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .input-group-prepend span{
             width: 50px;
+            height: 55px;
             background-color: #FFC312;
             color: black;
             border: 0 !important;
+
         }
 
         input:focus{
-            outline: 0 0 0 0  !important;
             box-shadow: 0 0 0 0 !important;
-        }
-
-        .remember{
-            color: white;
         }
 
         .remember input{
@@ -111,17 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-right: 5px;
         }
 
-        .login_btn{
-            color: black;
-            background-color: blue;
-            width: 100px;
-        }
-
-        .login_btn:hover{
-            color: black;
-            background-color: white;
-        }
-
         .links{
             color: white;
         }
@@ -129,9 +122,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .links a{
             margin-left: 4px;
         }
+        .input-group{
+            margin-bottom: 20px;
+        }
+        .input-group input{
+            height: 55px;
+        }
     </style>
 </head>
 <body>
+<div class="container"  >
+    <img src="images/MAD-logo.png" alt="logo" >
+
+</div>
+
 <div class="container">
     <div class="d-flex justify-content-center h-100">
         <div class="card">
@@ -170,13 +174,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="input-group form-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            <span class="input-group-text"><i class="fas fa-address-card"></i></span>
                         </div>
-                        <input type="addresse" name="addresse" class="form-control" placeholder="Addresse Postale">
+                        <input type="text" name="addresse" class="form-control" placeholder="01 Nom de la Rue, 93400, La ville">
                     </div>
-                    <div class="row align-items-center remember">
-                        <input type="checkbox"> Se souvenir de moi
-                    </div>
+
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-block">S'inscrire</button>
                     </div>

@@ -2,8 +2,16 @@
 include 'produit.php';
 
 
+/**
+ * Fonctions de gestion des catégories
+ */
 
-function addCategorie($nom) {
+/**
+ * Ajouter une nouvelle catégorie
+ * @param string $nom
+ * @return int|null
+ */
+function addCategorie(string $nom): ?int {
     $sql = "INSERT INTO categorie VALUES (DEFAULT, '$nom') RETURNING categorieID";
     $result = pg_query(connexion(), $sql);
 
@@ -12,13 +20,17 @@ function addCategorie($nom) {
         $line = pg_fetch_assoc($result);
         $id = $line['categorieid'];
     }
-    pg_free_result($result); //libere la ressource
+    pg_free_result($result);
     pg_close(connexion());
     return $id;
 }
 
+/**
+ * Récupérer toutes les catégories
+ * @return array
+ */
 function getAllCategories(): array {
-    $sql = "SELECT * FROM categorie";
+    $sql = "SELECT * FROM categorie ORDER BY nom";
     $result = pg_query(connexion(), $sql);
 
     $categories = array();
@@ -30,31 +42,44 @@ function getAllCategories(): array {
     return $categories;
 }
 
-function getCategorieByID($categorieID): bool|array {
+/**
+ * Récupérer une catégorie par son ID
+ * @param int $categorieID
+ * @return bool|array
+ */
+function getCategorieByID(int $categorieID): bool|array {
 
     $sql = "SELECT * FROM categorie WHERE categorieID = '$categorieID'";
     $result = pg_query(connexion(), $sql);
 
     $categorie = array();
-    if(isset($result)) {
+    if($result && pg_num_rows($result) > 0) {
         $categorie = pg_fetch_assoc($result);
     }
     pg_free_result($result);
     pg_close(connexion());
-
     return $categorie;
 }
 
 
-//    Mettre à jour les détails d'une catégorie 
-function updateCategorie($categorieID, $nom): void {
+/**
+* Met à jour les détails d'une catégorie
+* @param int $categorieID
+* @param string $nom
+*/
+function updateCategorie(int $categorieID, string $nom): void {
     $sql = "UPDATE categorie SET nom = '$nom' WHERE categorieID = '$categorieID'";
     $result = pg_query(connexion(), $sql);
+    pg_free_result($result);
     pg_close(connexion());
 }
 
-//    Supprimer une catégorie par son ID 
-function deleteCategorie($categorieID) {
+/**
+ * Suppression  d'une catégorie
+ * @param int $categorieID
+ * @return bool|resource
+ */
+function deleteCategorie(int $categorieID) {
     // transaction pour gérer les dépendances de manière atomique
     pg_query(connexion(), "BEGIN");
 
@@ -83,9 +108,9 @@ function deleteCategorie($categorieID) {
         pg_query(connexion(), "ROLLBACK");
     }
     // Fermez la connexion
+    pg_free_result($result);
     pg_close(connexion());
-
     return $result;
 }
 
-?>
+

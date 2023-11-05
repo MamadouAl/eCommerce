@@ -1,26 +1,24 @@
 <?php
 session_start();
 require("./util/users.php");
+$_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
+
 $Produits = getAllProduits();
-
-
-$id=0;
-$nom="";
-if (isset($_GET['clientID'])) {
-$id = $_GET['clientID'];
-$user = getUserByID($id);  //le nom de l'utilisateur réel
-$nom = $user['prenom'].' '.$user['nom'];
-}
 
 // Vérifiez si l'utilisateur est connecté
 if(isset($_SESSION['clientID'])) {
-        // Si l'utilisateur est connecté, on affiche du contenu spécifique ici
+    //
+    $id = $_SESSION['clientID'];
+    $user = getUserByID($id);  //le nom de l'utilisateur réel
+    $nom = $user['prenom'].' '.$user['nom'];
 
+    // Si l'utilisateur est connecté, on affiche du contenu spécifique ici
     $connectee ='
          <div class="col-sm-4 offset-md-1 py-4">
           <h4 class="text-white">'.$nom.'</h4>
           <ul class="list-unstyled">
             <li><a href="deconnexion.php" class="text-white">Se deconnecter</a></li>
+            <li><a href="monProfil.php" class="text-white">Mon Profil</a></li>
           </ul>
         </div>';
 
@@ -52,15 +50,16 @@ if(isset($_SESSION['clientID'])) {
                     ";
     foreach ($Produits as $produit) {
         $content .= "
-                        <div class='col'>
+                        <div class='col' xmlns=\"http://www.w3.org/1999/html\">
                             <div class='card shadow-sm'>
                                 <h3>{$produit['nom']}</h3>
-                                <img src='{$produit['image_url']}' style='width: 85%'>
+                                <a href='afficherUnProduit.php?produitid={$produit['produitid']}'>
+                                <img src='{$produit['image_url']}' alt='{$produit['nom']}' style='width: 85%'> </a>
                                 <div class='card-body'>
                                     <p class='card-text'>{$produit['description']}</p>
                                     <div class='d-flex justify-content-between align-items-center'>
                                         <div class='btn-group'>
-                                            <a href='affiche_prod.php?produitid={$produit['produitid']}'><button type='button' class='btn btn-sm btn-success'>Voir plus</button></a>
+                                            <a href='afficherUnProduit.php?produitid={$produit['produitid']}'><button type='button' class='btn btn-sm btn-success'>Voir plus</button></a>
                                         </div>
                                         <small class='text' style='font-weight: bold;'>{$produit['prix']} €</small>
                                     </div>
@@ -111,12 +110,12 @@ if(isset($_SESSION['clientID'])) {
                         <div class='col'>
                             <div class='card shadow-sm'>
                                 <h3>{$produit['nom']}</h3>
-                                <img src='{$produit['image_url']}' style='width: 85%'>
+                                <img src='{$produit['image_url']}' class='bd-placeholder-img' alt='{$produit['nom']}' style='width: 85%'>
                                 <div class='card-body'>
                                     <p class='card-text'>{$produit['description']}</p>
                                     <div class='d-flex justify-content-between align-items-center'>
                                         <div class='btn-group'>
-                                            <a href='affiche_prod.php?produitid={$produit['produitid']}'><button type='button' class='btn btn-sm btn-success'>Voir plus</button></a>
+                                            <a href='afficherUnProduit.php?produitid={$produit['produitid']}'><button type='button' class='btn btn-sm btn-success'>Voir plus</button></a>
                                         </div>
                                         <small class='text' style='font-weight: bold;'>{$produit['prix']} €</small>
                                     </div>
@@ -136,7 +135,6 @@ if(isset($_SESSION['clientID'])) {
 ?>
 <!DOCTYPE html>
 <html lang="fr" data-bs-theme="auto">
-<head>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -172,9 +170,6 @@ if(isset($_SESSION['clientID'])) {
             display: block !important;
         }
     </style>
-
-    
-  </head>
 </head>
 <body>
 <header>
@@ -187,15 +182,6 @@ if(isset($_SESSION['clientID'])) {
         </div>
 <?php if(isset($_SESSION['clientID'])) echo $connectee;
         else echo $NonConnectee; ?>
-<!--
-        <div class="col-sm-4 offset-md-1 py-4">
-          <h4 class="text-white">Sign in</h4>
-          <ul class="list-unstyled">
-            <li><a href="login.php" class="text-white">Se connecter</a></li>
-          </ul>
-        </div>
-    -->
-
       </div>
     </div>
   </div>

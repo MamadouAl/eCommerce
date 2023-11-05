@@ -7,7 +7,6 @@ if (isset($_SESSION['clientID'])){
 
     session_destroy();
     echo "Deconnexion réussi !";
-    header("Location: index.php");
+    header("Location: login.php");
 }
 
-?>

@@ -1,17 +1,21 @@
-<!--  Gestion des utilisateurs :  -->
-
 <?php
-include 'produit.php';
+/**
+ * Fichier de fonctions pour les utilisateurs
+ */
+include 'panier.php';
 
-// Inscription d'un nouveau client
-	function addClient(array $client) {
+/**
+ * Inscription d'un nouveau client dans la base de données
+ * @param array $client
+ * @return mixed|null
+ */
+function addClient(array $client) : ?int{
     $connected = connexion();
     $requete = "INSERT INTO client VALUES(DEFAULT, $1, $2, $3, $4, $5) RETURNING clientID";
     pg_prepare($connected, "add", $requete);
     $resu = pg_execute($connected, "add", $client);
 
     $id = null;
-
     if ($resu) {
         $row = pg_fetch_assoc($resu);
         $id = $row['clientid'];
@@ -19,45 +23,46 @@ include 'produit.php';
 
     pg_free_result($resu);
     pg_close($connected);
-
     return $id;
 }
 
 
-// Authentification d'un utilisateur
-function loginUser($email, $motDePasse) {
-    $connected = connexion(); 
-    
+/**
+ * Connexion d'un utilisateur
+ * @param $email
+ * @param $motDePasse
+ * @return bool
+ */
+function loginUser($email, $motDePasse) : bool  {
     //Requete de recuperation des informations
     $sql = "SELECT * FROM client WHERE email = $1";
-    
-    // Préparez la requête et vérifiez si la préparation a réussi.
-    $result = pg_prepare($connected, "log", $sql);
+    $result = pg_prepare(connexion(), "log", $sql);
+
     if (!$result) {
-        die("La préparation de la requête a échoué : " . pg_last_error($connected));
+        die("La préparation de la requête a échoué : " . pg_last_error(connexion()));
     }
+    $execute = pg_execute(connexion(), "log", array($email));
 
-    // Exécutez la requête en passant le paramètre $email.
-    $execute = pg_execute($connected, "log", array($email));
-
-    if ($execute) {
-        $user = pg_fetch_assoc($execute); // Récupération des résultats sous forme de tableau associatif.
+    if (isset($execute)) {
+        $user = pg_fetch_assoc($execute);
         if ($user && $user['passwd'] === $motDePasse) {
-            $_SESSION['userID'] = $user['clientid']; // Assurez-vous des noms de colonnes corrects.
+            $_SESSION['userID'] = $user['clientid'];
             pg_free_result($execute);
-            pg_close($connected);
+            pg_close(connexion());
             return true;
         }
     }
     
     pg_free_result($execute);
-    pg_close($connected);
-
-    // Authentification échouée
-    return false;
+    pg_close(connexion());
+    return false; // L'utilisateur n'existe pas
 }
 
-function getAllUsers() {
+/**
+ * Récupérer toutes les informations d'un utilisateur
+ * @return array
+ */
+function getAllUsers() : array{
     $query = "SELECT * FROM client";
     $result = pg_query(connexion(), $query);
 
@@ -70,32 +75,37 @@ function getAllUsers() {
     return $users;
 }
 
-
-// Récupération des informations d'un utilisateur par son ID
-function getUserByID($userID){
-	$connected = connexion(); 
-    
-    //Requete de recuperation des informations
+/**
+ * Récupérer les informations d'un utilisateur par son ID
+ * @param $userID
+ * @return array
+ */
+function getUserByID($userID) : array {
     $sql = "SELECT * FROM client WHERE clientID = $1";
-    pg_prepare($connected, "userId", $sql);
-	$resu = pg_execute($connected, "userId", array($userID));
+    pg_prepare(connexion(), "userId", $sql);
+	$resu = pg_execute(connexion(), "userId", array($userID));
 	
 	$users = array();
 
-	if(isset($resu)){
-		$users = pg_fetch_assoc($resu);
+	if(($resu)){
+		$user = pg_fetch_assoc($resu);
+        if ($user) {
+            $users = $user;
+        }
 	}
 	pg_free_result($resu);
-    pg_close($connected);
-
+    pg_close(connexion());
     return $users;
 }
 
-// Récupération des informations d'un utilisateur par son email
+/**
+ * Récupérer les informations d'un utilisateur par son email
+ * @param $email
+ * @return array
+ */
+function getUserByEmail($email) : array {
+	$connected = connexion();
 
-function getUserByEmail($email){
-	$connected = connexion(); 
-    
     //Requete de recuperation des informations
     $sql = "SELECT * FROM client WHERE email = $1";
     pg_prepare($connected, "userId", $sql);
@@ -103,91 +113,83 @@ function getUserByEmail($email){
 	
 	$users = array();
 
-	if(isset($users)){
+	if(($resu)){
 		$users = pg_fetch_assoc($resu);
 	}
 	pg_free_result($resu);
     pg_close($connected);
-
     return $users;
 }
 
-// Mise à jour des informations d'un utilisateur
-function updateUser($userID, $nom, $prenom, $email, $adresseLivraison) : void {
+/**
+ * Fonction qui permet de mettre à jour les informations d'un utilisateur
+ * @param $userID
+ * @param $nom
+ * @param $prenom
+ * @param $email
+ * @param $adresseLivraison
+ * @return bool
+ */
+function updateUser($userID, $nom, $prenom, $email, $adresseLivraison) : bool
+{
 	$connected = connexion();
-	
+
 	$sql = "UPDATE client SET nom=$2, prenom =$3, email=$4, adresseLivraison=$5 WHERE clientID=$1";
-	
+
 	pg_prepare($connected, "update", $sql);
-	$resu = pg_execute($connected, "update", array($userID, $nom, $prenom, $email, $adresseLivraison));
-}
-
-// Modification du mot de passe d'un utilisateur
-function changePassword($userID, $nouveauMotDePasse) {
-	$connected = connexion();
-	
-	$sql = "UPDATE client SET passwd =$2 WHERE clientID=$1";
-	
-	pg_prepare($connected, "passwd", $sql);
-	$resu = pg_execute($connected, "passwd", array($userID, $nouveauMotDePasse));
-}
-
-// Déconnexion de l'utilisateur
-function logoutUser() {
-	// Démarre ou restaure la session
-    session_start();
-    
-    // Détruit toutes les données de session
-    session_destroy();
-    
-    // Redirige l'utilisateur vers une page de déconnexion ou d'accueil
-    header("Location: index.php");
-    exit;
-}
-
-// admin.php
-
-function authentifierUser($email, $password) {
-    // Vérifiez les informations d'identification dans la base de données
-    $query = "SELECT clientID, email, passwd FROM client WHERE email = $1";
-    pg_prepare(connexion(), "authentifier_client", $query);
-    $result = pg_execute(connexion(), "authentifier_client", array($email));
-
-    if ($result && pg_num_rows($result) > 0) {
-        $row = pg_fetch_assoc($result);
-        $hashedPassword = $row['passwd'];
-
-        // Vérifiez si le mot de passe correspond
-        if (password_verify($password, $hashedPassword)) {
-            // Authentification réussie, retournez l'ID du client
-            return $row['clientID'];
-        }
+	$result = pg_execute($connected, "update", array($userID, $nom, $prenom, $email, $adresseLivraison));
+    $bool = false;
+    if (!$result) {
+        die("La mise à jour a échoué : " . pg_last_error($connected));
+} else {
+        $bool = true;
     }
 
-    // Authentification échouée, retournez null
-    return null;
+
+    pg_free_result($result);
+    pg_close($connected);
+    return $bool;
 }
 
-function emailExisteDeja($email) {
-    // Préparez la requête pour vérifier si l'e-mail existe déjà
+/**
+ * Fonction qui permet de mettre à jour le mot de passe d'un utilisateur
+ * @param $userID
+ * @param $nouveauMotDePasse
+ */
+function changePassword($userID, $nouveauMotDePasse) : void {
+	$sql = "UPDATE client SET passwd =$2 WHERE clientID=$1";
+	pg_prepare(connexion(), "passwd", $sql);
+	pg_execute(connexion(), "passwd", array($userID, $nouveauMotDePasse));
+}
+
+/**
+ * Fonction qui permet de verifier si un email existe déjà dans la base de données
+ * @param $email
+ * @return bool qui indique si l'email existe déjà ou non
+ */
+function emailExisteDeja($email) : bool {
     $query = "SELECT COUNT(*) FROM client WHERE email = $1";
-    pg_prepare(connexion(), "check_email", $query);
-    
-    // Exécutez la requête avec l'e-mail en tant que paramètre
-    $result = pg_execute(connexion(), "check_email", array($email));
+    pg_prepare(connexion(), "checkEmail", $query);
+    $result = pg_execute(connexion(), "checkEmail", array($email));
     
     if ($result) {
-        // Récupérez le résultat sous forme de tableau associatif
         $row = pg_fetch_assoc($result);
-        
         // Si le compte des e-mails est supérieur à zéro, cela signifie que l'e-mail existe déjà
         return intval($row["count"]) > 0;
-    } else {
-        // Gestion des erreurs de requête (par exemple, erreur de connexion à la base de données)
-        return false;
     }
+    return false;
 }
 
-//print_r(getUserByEmail('mad@gmail.com'));
 
-?>
+/**
+ * Fonction qui permet de supprimer un utilisateur
+ * @param $userID
+ */
+function deleteUser($userID) : void {
+    $query = "DELETE FROM client WHERE clientID = $1";
+    pg_prepare(connexion(), "delete", $query);
+    pg_execute(connexion(), "delete", array($userID));
+}
+
+//print_r(getUserByID(1));
+//print_r(getUserByEmail('barry@gmail.com'));

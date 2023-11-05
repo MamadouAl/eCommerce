@@ -1,12 +1,18 @@
 <?php
 session_start();
+$_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
 
 require('./util/panier.php');
+
 if(isset($_SESSION['clientID']))
 $clientID = $_SESSION['clientID'];
 
 
-if (isset($_GET['produitid'])) {
+if (!isset($_GET['produitid'])) {
+    header("Location: index.php"); // Rediriger vers la page d'accueil si aucun produit n'est sélectionné
+    exit;
+}
+
     $produitID = $_GET['produitid'];
     $produit = getProduitByID($produitID);
 
@@ -14,10 +20,7 @@ if (isset($_GET['produitid'])) {
         header("Location: index.php"); // Rediriger vers la page d'accueil si le produit n'existe pas
         exit;
     }
-} else {
-    header("Location: index.php"); // Rediriger vers la page d'accueil si aucun produit n'est sélectionné
-    exit;
-}
+    
 ?>
 
 <!doctype html>
@@ -58,8 +61,6 @@ if (isset($_GET['produitid'])) {
             display: block !important;
         }
     </style>
-
-    
   </head>
   <body>
     
@@ -100,16 +101,16 @@ if (isset($_GET['produitid'])) {
         <div class="col">
           <div class="card shadow-sm">
             <h3><?= $produit['nom'] ?></h3>
-            <img src="<?= $produit['image_url'] ?>" style="width: 55%">
+            <img src="<?= $produit['image_url'] ?>" class="bd-placeholder-img-lg" alt="<?= $produit['nom'] ?>" style="width: 55%">
             <div class="card-body">
               <p class="card-text"><?= $produit['description'] ?></p>
               <p>Prix: <?= $produit['prix'] ?> €</p>
-              <!-- Ajouter un formulaire pour ajouter au panier -->
+
               <form method="post" >
                 <input type="hidden" name="produitID" value="<?= $produitID ?>">
                 <label for="quantite">Quantité :</label>
                 <input type="number" name="quantite" id="quantite" value="1" min="1">
-                <button type="submit" name="ajouter_panier" class="btn btn-primary">Ajouter au Panier</button>
+                <button type="submit" name="ajouter_panier" class="btn btn-primary bd-mode-toggle" >Ajouter au Panier</button>
                   <?php
                         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             if (!isset($_SESSION['clientID'])) {
@@ -122,9 +123,14 @@ if (isset($_GET['produitid'])) {
 
                         }
 
+
                   ?>
               </form>
               <a href="index.php" class="btn btn-secondary">Retour à la liste des produits</a>
+                <a href="monPanier.php">
+
+                    <img src="./images/icon_panier.png" class="bd-placeholder-img" alt="monPanier" width="60" height="50">
+                </a>
             </div>
           </div>
         </div>
@@ -143,7 +149,7 @@ if (isset($_GET['produitid'])) {
     <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="/docs/5.3/getting-started/introduction/">getting started guide</a>.</p>
   </div>
 </footer>
-<script src="/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
 
 </body>
 </html>

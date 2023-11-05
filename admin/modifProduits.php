@@ -1,28 +1,26 @@
 <?php
 session_start();
-
-include '../util/categorie.php'; // Assurez-vous d'inclure le fichier pour la gestion des produits
-
+$_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
 
 
-if(!isset($_GET['id'])){
+include '../util/users.php';
+
+if(!isset($_SESSION['admin']) OR empty($_SESSION['admin'])) //admin
+{
+    header("Location: ../login.php");
+}
+
+$clientID =$_SESSION['clientID'];
+$admin = getUserByID($clientID);
+
+if(!isset($_GET['id']) OR !is_numeric($_GET['id'])){
     header("Location: afficheProduits.php");
 }
 
-if(empty($_GET['id']) OR !is_numeric($_GET['id'])){
-    header("Location: afficheProduits.php");
-}
-
-if(isset($_GET['id'])){
-    if(!empty($_GET['id']) OR is_numeric($_GET['id']))
-    {
-        $id = $_GET['id'];
-        $produit = getProduitByID($id);
-        $categorieID= $produit['categorieid'];
-        $categories = getAllCategories();
-    }
-}
-
+$id = $_GET['id'];
+$produit = getProduitByID($id);
+$categorieID= $produit['categorieid'];
+$categories = getAllCategories();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -33,12 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $image_url = $_POST['image'];
     $categorieID = (int)$_POST['categorieID']; 
 
-    if(isset($_GET['id'])){
-        if(!empty($_GET['id']) OR is_numeric($_GET['id']))
-        {
-            $produitID = $_GET['id'];
-        }
-    }
+    $produitID = $_GET['id'];
 
     try 
     {
@@ -55,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
@@ -67,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="../">Administration</a>
+        <a class="navbar-brand" href="admin.php" >Administration</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -88,9 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </li>
             </ul>
             <div style="margin-right: 500px">
-                <h5 style="color: #545659; opacity: 0.5;">Connecté en tant que: <?php echo 'XXX'; ?></h5>
+                <h5 style="color: #545659; opacity: 1.5;">Connecté en tant que: <b style="color: chocolate"><?php echo $admin['nom'].' '.$admin['prenom'] ?></b></h5>
             </div>
-            <a class="btn btn-danger d-flex" style="display: flex; justify-content: flex-end;" href="destroy.php">Se deconnecter</a>
+            <a class="btn btn-danger d-flex" style="display: flex; justify-content: flex-end;" href="../deconnexion.php">Se deconnecter</a>
         </div>
     </div>
 </nav>

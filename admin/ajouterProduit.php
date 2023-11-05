@@ -1,5 +1,21 @@
 <?php
-include '../util/categorie.php';
+session_start();
+$_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
+
+include '../util/users.php';
+
+$id =1;
+if(!isset($_SESSION['admin']) ) //admin
+{
+    header("Location: ../login.php");
+}
+
+if(empty($_SESSION['admin']))
+{
+    header("Location: ../login.php");
+}
+$clientID =$_SESSION['clientID'];
+$admin = getUserByID($clientID);
 
 $categories = getAllCategories();
 
@@ -14,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $produitID = addProduit($nom, $description, $prix, $image_url, $categorieID);
         echo "Ajout effectué !";
         // Redirection vers la page souhaitée
-        header('Location: index.php'); // Assurez-vous que le nom du fichier est correct
+        header('Location: afficheProduits.php'); // Assurez-vous que le nom du fichier est correct
         exit;
     } catch (Exception $e) {
         echo "Problème : " . $e->getMessage();
@@ -23,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
@@ -35,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="../">Administration</a>
+        <a class="navbar-brand" href="admin.php">Administration</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -46,16 +62,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a class="nav-link" aria-current="page" href="afficheProduits.php">Produits</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" style="font-weight: bold;" aria-current="page" href="ajouteProduit.php">Nouveau</a>
+                    <a class="nav-link active" style="font-weight: bold;" aria-current="page" href="#">Nouveau</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="supprimeProduits.php">Suppression</a>
                 </li>
             </ul>
             <div style="margin-right: 500px">
-                <h5 style="color: #545659; opacity: 0.5;">Connecté en tant que: XXXX</h5>
+                <h5 style="color: #545659; opacity: 1.5;">Connecté en tant que: <b style="color: chocolate"><?php echo $admin['nom'].' '.$admin['prenom'] ?></b></h5>
             </div>
-            <a class="btn btn-danger d-flex" style="display: flex; justify-content: flex-end;" href="destroy.php">Se déconnecter</a>
+            <a class="btn btn-danger d-flex" style="display: flex; justify-content: flex-end;" href="../deconnexion.php">Se déconnecter</a>
         </div>
     </div>
 </nav>

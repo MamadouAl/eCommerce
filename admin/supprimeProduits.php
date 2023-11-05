@@ -1,8 +1,14 @@
 <?php
 session_start();
+$_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
 
-require("../util/categorie.php");
+include '../util/users.php';
 
+if(!$_SESSION['admin'] or empty($_SESSION['admin'])){ //admin
+    header("Location: ../login.php");
+}
+$clientID =$_SESSION['clientID'];
+$admin = getUserByID($clientID);
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -43,7 +49,7 @@ $Produits = getAllProduits();
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Administration</a>
+        <a class="navbar-brand" href="admin.php">Administration</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -61,10 +67,10 @@ $Produits = getAllProduits();
             </ul>
 
             <div style="margin-right: 500px">
-                <h5 style="color: #545659; opacity: 0.5;">Connecté en tant que: <b></b><?= "Admin" ?></b></h5>
+                <h5 style="color: #545659; opacity: 1.5;">Connecté en tant que: <b style="color: chocolate"><?php echo $admin['nom'].' '.$admin['prenom'] ?></b></h5>
             </div>
 
-            <a class="btn btn-danger d-flex" style="display: flex; justify-content: flex-end;" href="destroy.php">Se déconnecter</a>
+            <a class="btn btn-danger d-flex" style="display: flex; justify-content: flex-end;" href="../deconnexion.php">Se déconnecter</a>
         </div>
     </div>
 </nav>
