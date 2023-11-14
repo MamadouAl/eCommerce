@@ -55,11 +55,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
           integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
           crossorigin="anonymous">
+
+    <style>
+        #iciPanier {
+            color: white;
+            border-bottom: solid;
+        }
+    </style>
 </head>
 <body>
 
 <header>
-    <?php include('./includes/header.php'); //  ?>
+    <?php include('./includes/monHeader.php');  ?>
 </header>
 <div class="container">
     <div class="d-flex justify-content-center h-110">

@@ -113,4 +113,20 @@ function deleteCategorie(int $categorieID) {
     return $result;
 }
 
+/**
+ * Récupérer tous les produits d'une catégorie par son ID
+ * @param int $categorieID
+ * @return array
+ */
+function getProduitsByCategorieID($id) {
+    $sql = "SELECT * FROM produit WHERE categorieID = '$id' ORDER BY nom";
+    $result = pg_query(connexion(), $sql);
 
+    $produits = array();
+    while ($row = pg_fetch_assoc($result)) {
+        $produits[] = $row;
+    }
+
+    pg_close(connexion());
+    return $produits;
+}

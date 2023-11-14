@@ -2,59 +2,101 @@
 session_start();
 require("./util/users.php");
 $_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
-
 $Produits = getAllProduits();
+$id = null;
+$nom = null;
+$user = null;
 
-// Vérifiez si l'utilisateur est connecté
 if(isset($_SESSION['clientID'])) {
-    //
-    $id = $_SESSION['clientID'];
-    $user = getUserByID($id);  //le nom de l'utilisateur réel
-    $nom = $user['prenom'].' '.$user['nom'];
+// Récupérer le nom de l'utilisateur connecté
+$id = $_SESSION['clientID'];
+$user = getUserByID($id);  //le nom de l'utilisateur réel
+$nom = $user['prenom'] . ' ' . $user['nom'];
+}
+$Produits = null;
+if (isset($_GET['query'])) {
+    $motCle = $_GET['query'];
+    $resultats = rechercheProduit($motCle);
+    $Produits = $resultats;
+}else if(isset($_GET['id'])){
+    $categorieID = $_GET['id'];
+    $Produits = getProduitsByCategorieID($categorieID);
+}
+else{
+    $Produits = getAllProduits();
+}
+
 
     // Si l'utilisateur est connecté, on affiche du contenu spécifique ici
     $connectee ='
          <div class="col-sm-4 offset-md-1 py-4">
-          <h4 class="text-white">'.$nom.'</h4>
-          <ul class="list-unstyled">
-            <li><a href="deconnexion.php" class="text-white">Se deconnecter</a></li>
-            <li><a href="monProfil.php" class="text-white">Mon Profil</a></li>
-          </ul>
+          
+             <div class="profile-sidebar">
+                <div class="profile-userpic">
+                    <!-- la photo de profil de l utilisateur -->
+                    <img src="https://static.thenounproject.com/png/363640-200.png" class="img-responsive" style="color: white" alt="user_image" height="60" width="60">
+                </div>
+                <div class="profile-usertitle">
+                    <div class="profile-usertitle-name">
+                        <h4 class="text-white">'.$nom.'</h4>
+                    </div>
+                    <div class="profile-usertitle-job">
+                        <b class="text-white">Client</b>
+                    </div>
+                </div>
+                <div class="profile-userbuttons">
+                    <a href="monProfil.php" class="btn btn-danger btn-sm">Mon Profil</a>
+                </div>
+             </div>
+             
+             
         </div>';
 
-    $content = "
-        <section class='py-5 text-center container'>
-            <!-- Le contenu spécifique pour l'utilisateur connecté... -->
-            <h1>Bienvenue, $nom!</h1> </hr>
-        </section>";
+$NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
+      <h4 ><a class="btn btn-danger" href="inscription.php">M\'INSCRIRE</a></h4>
+  </div>';
 
-        $content = "
-        <section class='py-5 text-center container'>
-        <h1>Bienvenue, $nom!</h1>
-        <h1 class='fw-light'>Mad Shop</h1>
-            <p class='lead text-body-secondary'>
-                Mad Shop, votre destination incontournable pour des achats en ligne exceptionnels. 
-                Découvrez une vaste sélection de produits de qualité, des dernières tendances en mode aux gadgets high-tech innovants. 
-                Notre engagement envers la qualité et la satisfaction du client fait de Mad Shop le choix ultime pour vos besoins d'achat en ligne. 
-                Explorez notre boutique et laissez-vous emporter par la folie du shopping en ligne.
-            </p>
+
+    $content = ' <div class="recherche-bloc">
+<div class="col-md-6 offset-md-3 mt-5">
+              <form method="GET">
+                  <div class="input-group">
+                      <input type="text" class="form-control" name="query" placeholder="Rechercher un produit...">
+                      <div class="input-group-append">
+                          <button class="btn btn-primary" type="submit">Rechercher</button>
+                      </div>
+                  </div>
+              </form>
+          </div>
+          </div>';
+    $content .= "
+        <section class='py-5 text-center container'>";
+       if(isset($_SESSION['clientID'])) {
+           $content .= "'<h1>Bienvenue, $nom!</h1> ";
+       }
+       $content .= "
+        <h2 class='fw-light'>Mad Shop</h2>
             <p>
                 <a href='#' class='btn btn-primary my-2'>Main call to action</a>
                 <a href='#' class='btn btn-secondary my-2'>Secondary action</a>
             </p>
-        </section>
+        </section>";
+        if(empty($Produits)){
+            $content .=" <h1 style='text-align: center'>Aucun produit trouvé !</h1>
+             ";
+        }
+        $content .= "
         <div class='album py-5 bg-body-tertiary'>
             <div class='container'>
-                <div class='row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3'>
-                    <!--ICI -->
-                    ";
-    foreach ($Produits as $produit) {
-        $content .= "
-                        <div class='col' xmlns=\"http://www.w3.org/1999/html\">
+                <div class='row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3'> ";
+
+            foreach ($Produits as $produit) {
+                $content .= "
+                        <div class='produit-case' xmlns=\"http://www.w3.org/1999/html\">
                             <div class='card shadow-sm'>
                                 <h3>{$produit['nom']}</h3>
                                 <a href='afficherUnProduit.php?produitid={$produit['produitid']}'>
-                                <img src='{$produit['image_url']}' alt='{$produit['nom']}' style='width: 85%'> </a>
+                                <img id='produit_image' src='{$produit['image_url']}' alt='{$produit['nom']}'> </a>
                                 <div class='card-body'>
                                     <p class='card-text'>{$produit['description']}</p>
                                     <div class='d-flex justify-content-between align-items-center'>
@@ -68,69 +110,9 @@ if(isset($_SESSION['clientID'])) {
                         </div>
                     ";
     }
-    $content .= "
-                </div>
-            </div>
-        </div>
-    </div>
-    ";
-} else {
-    // L'utilisateur n'est pas connecté, affichez le contenu standard
-    
-    $NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
-    <h4 class="text-white">Sign in_up</h4>
-    <ul class="list-unstyled">
-      <li><a href="login.php" class="text-white">Se connecter</a></li>
-      <li><a href="inscription.php" class="text-white">M\'inscrire</a></li>
-    </ul>
-  </div>';
 
-    $content = "
-        <section class='py-5 text-center container'>
-            <!-- Contenu standard pour les utilisateurs non connectés... -->
-            <h1 class='fw-light'>Mad Shop</h1>
-            <p class='lead text-body-secondary'>
-                Mad Shop, votre destination incontournable pour des achats en ligne exceptionnels. 
-                Découvrez une vaste sélection de produits de qualité, des dernières tendances en mode aux gadgets high-tech innovants. 
-                Notre engagement envers la qualité et la satisfaction du client fait de Mad Shop le choix ultime pour vos besoins d'achat en ligne. 
-                Explorez notre boutique et laissez-vous emporter par la folie du shopping en ligne.
-            </p>
-            <p>
-                <a href='#' class='btn btn-primary my-2'>Main call to action</a>
-                <a href='#' class='btn btn-secondary my-2'>Secondary action</a>
-            </p>
-        </section>
-        <div class='album py-5 bg-body-tertiary'>
-            <div class='container'>
-                <div class='row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3'>
-                    <!--ICI -->
-                    ";
-    foreach ($Produits as $produit) {
-        $content .= "
-                        <div class='col'>
-                            <div class='card shadow-sm'>
-                                <h3>{$produit['nom']}</h3>
-                                <img src='{$produit['image_url']}' class='bd-placeholder-img' alt='{$produit['nom']}' style='width: 85%'>
-                                <div class='card-body'>
-                                    <p class='card-text'>{$produit['description']}</p>
-                                    <div class='d-flex justify-content-between align-items-center'>
-                                        <div class='btn-group'>
-                                            <a href='afficherUnProduit.php?produitid={$produit['produitid']}'><button type='button' class='btn btn-sm btn-success'>Voir plus</button></a>
-                                        </div>
-                                        <small class='text' style='font-weight: bold;'>{$produit['prix']} €</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ";
-    }
-    $content .= "
-                </div>
-            </div>
-        </div>
-    </div>
-    ";
-}
+
+
 
 ?>
 <!DOCTYPE html>
@@ -144,59 +126,319 @@ if(isset($_SESSION['clientID'])) {
     <title>Home</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 
     <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
+        body {
+            font-size: 16px;
         }
-        
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .language-flag {
+            margin-left: 97%;
+        }
+
+        .language-flag img {
+            border: 1px solid #ccc; /* Bordure autour du drapeau, optionnel */
+            border-radius: 50%; /* Pour donner une forme de cercle à l'image */
+            cursor: pointer; /* Changement de curseur au survol, optionnel */
+            transition: transform 0.3s ease; /* Transition en douceur pour un effet au survol */
+        }
+
+        .language-flag img:hover {
+            transform: scale(1.1); /* Effet d'agrandissement au survol */
+        }
+
+
+        .btn-danger {
+            color: #fff;
+            background-color: #dc3545;
+            border-color: #dc3545;
+            border-radius:20px
+        }
+
+        #navbarHeader {
+            background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            height: 100%;
+            font-family: 'Numans', sans-serif;
+        }
+
+        .navbar {
+           /* background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg'); */
+            background-color: #1c2a42;
+            background-size: cover;
+            background-repeat: no-repeat;
+            height: 100%;
+            font-family: 'Numans', sans-serif;
+            padding: 15px;
+        }
+
+        .page_menu_nav {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page_menu_nav li {
+            margin-right: 15px;
+        }
+        .page_menu_nav a{
+            text-decoration: none;
+            color: white;
+            text-transform: uppercase;
+            font-size: initial;
+
+        }
+
+        .page_menu_nav a:hover{
+            text-decoration: none;
+            color: #ffff;
+            border-radius: 20px;
+            background-color: #545659;
+            padding: 10px;
+            border-bottom: solid;
+        }
+
+        #ici {
+            color: white;
+            border-bottom: solid;
+        }
+        .page_menu_item.has-children:hover .page_menu_selection {
+            display: block;
+        }
+
+        .page_menu_selection {
+            display: none;
+            position: absolute;
+            /*background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg'); */
+            background-color: #333333;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            border-radius: 20px;
+            padding: 10px;
+        }
+
+        .page_menu_selection li {
+            display: block;
+        }
+
+        #lesCategories a {
+            text-decoration: none;
+            margin-bottom: 5px;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        /* contenu de la page */
+        .deconnexion img {
+            width: 30px;
+            height: 30px;
+        }
+
+        #produit_image {
+            width: 100%;
+            object-fit: cover;
+        }
+
+
+        .produit-case {
+            width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .produit-case h3 {
+            text-align: center;
+            font-size: 100%;
+        }
+        .produit-case p {
+            text-align: center;
+            font-size: 100%;
+        }
+
+
+
+        /* les écrans de taille moyenne, tels que les tablettes */
+        @media (max-width: 992px) {
+            body {
+                font-size: 14px;
+            }
+            .container {
+                width: 90%;
+            }
+            .page_menu_nav {
+                list-style: none;
+                display: flex;
+                flex-direction: column;
+                margin: 0;
+                padding: 0;
+            }
+
+            .page_menu_nav li {
+                margin-right: 10px;
             }
         }
 
-        .bd-mode-toggle {
-            z-index: 1500;
+        /* les écrans plus petits, tels que les téléphones */
+        @media (max-width: 768px) {
+            body {
+                font-size: 12px;
+            }
+
+            .container {
+                width: 100%;
+            }
+            .page_menu_nav {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .page_menu_nav li {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            .recherche-bloc {
+                width: 90%;
+            }
+
+            .page_menu_selection {
+                width: auto;
+                height: auto;
+                display: none;
+                position: absolute;
+                /*background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg'); */
+                background-color: #333333;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+                z-index: 1;
+                border-radius: 16px;
+                font-size: 0.5em;
+
+            }
+
         }
-        
-        .bd-mode-toggle .dropdown-menu .active .bi {
-            display: block !important;
+
+        @media (min-width: 300px) {
+            .produit-case {
+                width: 32%;
+                height : 50%;
+            }
+            .produit-case p, h3 {
+                font-size: 0.8em;
+            }
         }
+
+        @media (min-width: 768px) {
+            .produit-case {
+                width: 32%;
+            }
+            .produit-case p{
+                font-size: 0.8em;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .produit-case {
+                width: 24%;
+            }
+        }
+
     </style>
 </head>
 <body>
-<header>
-  <div class="collapse bg-dark" id="navbarHeader">
+<header >
+  <div class="collapse" id="navbarHeader" >
     <div class="container">
-      <div class="row">
-        <div class="col-sm-8 col-md-7 py-4">
-          <h4 class="text-white">About</h4>
-          <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+        <!-- fait moi un bloc où afficher la langue -->
+        <div class="language-flag">
+            <img src="./images/fr.png" alt="Langue" width="30" height="20">
         </div>
-<?php if(isset($_SESSION['clientID'])) echo $connectee;
-        else echo $NonConnectee; ?>
+
+        <div class="row">
+        <div class="col-sm-8 col-md-7 py-4">
+          <h4 class="text-white" style="color: white">Apropos</h4>
+          <p class="text-muted">
+              Mad Shop, votre destination incontournable pour des achats en ligne exceptionnels.
+              Découvrez une vaste sélection de produits de qualité, des dernières tendances en mode aux gadgets high-tech innovants.
+              Notre engagement envers la qualité et la satisfaction du client fait de Mad Shop le choix ultime pour vos besoins d'achat en ligne.
+              Explorez notre boutique et laissez-vous emporter par la folie du shopping en ligne.
+          </p>
+        </div>
+
+            <?php if(isset($_SESSION['clientID'])) echo $connectee;
+                    else echo $NonConnectee; ?>
       </div>
     </div>
   </div>
-  <div class="navbar navbar-dark bg-dark shadow-sm">
-    <div class="container">
-      <a href="#" class="navbar-brand d-flex align-items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        <strong>Mad Shop</strong>
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+
+    <div class="navbar navbar-dark shadow-sm" >
+        <div class="container">
+            <a href="index.php" class="navbar-brand d-flex align-items-center">
+                <strong style="margin-left: 10px;">Mad Shop</strong>
+            </a>
+
+
+            <div class="navbar-brand">
+                <ul class="page_menu_nav">
+                    <li><a href="index.php" <?php if(!isset($_GET['id']))  echo 'id="ici"';?> href="index.php">Accueil</a></li>
+                    <li><a href="produits.php">Produits</a></li>
+
+                    <li class="page_menu_item has-children">
+                        <a href="#" <?php if(isset($_GET['id']))  echo 'id="ici"'; ?>
+                        >Catégories<i class="fa fa-angle-down"></i></a>
+                        <ul class="page_menu_selection">
+                            <?php
+                            //fonction  pour obtenir la liste des catégories
+                            $categories = getAllCategories();
+                            // Parcourez les catégories et créez une liste d'éléments
+                            foreach ($categories as $categorie) {
+                                echo '<li id="lesCategories"><a href="index.php?id=' . $categorie['categorieid'] . '">' . $categorie['nom'] . '</a></li>';
+                            }
+                            ?>
+                        </ul>
+                    </li>
+
+
+                    <li><a href="monPanier.php">Panier</a></li>
+
+
+                    <?php if (isset($_SESSION['clientID'])) : ?>
+                        <li><a href="mesCommandes.php">Commandes</a></li>
+                        <li><a href="monProfil.php">Mon profil</a></li>
+                        <li class="deconnexion">
+                            <a  href="deconnexion.php" >
+                                <img src="./images/deconnexion.png" alt="deconnexion icon" ">
+                                </a> </li>
+                    <?php else : ?>
+                        <li><a class="btn btn-danger" href="login.php">Login</a></li>
+                    <?php endif; ?>
+
+                    <li class="page_menu_item has-children">
+                        <a href="#"><img src="./images/fr.png" alt="Langue" width="30" height="20"><i class="fa fa-angle-down"></i></a>
+                        <ul class="page_menu_selection">
+                            <li><a  href="./en/"><img src="./images/en.png" alt="Langue" width="30" height="20"><i class="fa fa-angle-down"></i></a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
     </div>
-  </div>
+
+
 </header>
+
+
 <main>
     <?php echo $content; ?>
 </main>

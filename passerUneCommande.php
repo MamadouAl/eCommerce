@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-header("Location: #");
-exit;
+//header("Location: #");
+//exit;
 ?>
 
 <!DOCTYPE html>
@@ -58,8 +58,9 @@ exit;
                 </tr>
                 </thead>
                 <tbody>
+
                 <?php foreach ($contenuPanier as $produit) : ?>
-                <tr>
+                    <tr>
                     <td> <a href="monPanier.php ?>">
                             <img src="<?= $produit['image_url'] ?>" alt="<?= $produit['nom'] ?>" style="max-width: 100px; height: auto;"/>
                         </a>

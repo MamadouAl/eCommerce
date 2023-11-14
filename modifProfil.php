@@ -37,16 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis à jour</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+    <style>
+        #iciProfil {
+            color: white;
+            border-bottom: solid;
+        }
+    </style>
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">Accueil</a>
-            <a class="navbar-brand" href="monProfil.php">Mon Profil</a>
-            <a class="navbar-brand" href="deconnexion.php">Déconnexion</a>
-        </div>
-    </nav>
+    <?php include('./includes/monHeader.php'); //  ?>
 </header>
 <div class="container mt-5">
     <h1 class="mb-4">Mis à jour</h1>

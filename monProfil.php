@@ -19,23 +19,36 @@ $commandes = getCommandesClient($clientID);  // Fonction pour récupérer l'hist
 $panierID = getPanierIDByClientID($clientID);  // Fonction pour récupérer le panier
 
 ?>
-
 <!DOCTYPE html>
-<html lang="fr">
-
+<html lang="fr" data-bs-theme="auto">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="MamadouAl">
+    <meta name="generator" content="Hugo 0.80.0">
     <title><?= $user['nom'].' '.$user['prenom'] ?> </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Votre CSS personnalisé va ici */
+        #iciProfil {
+            color: white;
+            border-bottom: solid;
+        }
+        .profile-content {
+            font-size: large;
+            margin-left: 10px;
+        }
     </style>
 </head>
-
 <body>
 <header>
-    <div style="text-align: center; background-color: darkgrey; padding: 20px;">
+    <?php include('./includes/monHeader.php'); //  ?>
+
+    <div style="text-align: center; background-color: darkgrey; margin-top: 0; padding: 20px;">
         <h1 style="color: chocolate; display: inline;"><?=$user['nom'].' '.$user['prenom']?></h1>
-        <b><a href="deconnexion.php" style="font-size: large; color: red; display: inline; margin-left: 65%;">Déconnexion</a></b>
     </div>
 </header>
 
@@ -45,17 +58,17 @@ $panierID = getPanierIDByClientID($clientID);  // Fonction pour récupérer le p
         <div class="col-md-3">
             <div class="profile-sidebar">
                 <div class="profile-userpic">
-                    <!-- Insérez ici la photo de profil de l'utilisateur -->
+                    <!-- la photo de profil de l'utilisateur -->
                     <img src="<?= "https://static.thenounproject.com/png/363640-200.png"//$user['photo_url'] ?>" class="img-responsive" alt="">
                 </div>
                 <div class="profile-usertitle">
                     <div class="profile-usertitle-name">
-                        <!-- Insérez ici le nom de l'utilisateur -->
                         <?= $user['prenom'] ?> <?= $user['nom'] ?>
                     </div>
                     <div class="profile-usertitle-job">
-                        <!-- Insérez ici le poste de l'utilisateur -->
-                        Client
+                        <?php if(isset($_SESSION['admin'])) echo '<b>Admin</b>'; else echo
+                        '<b>Client</b>'
+                        ?>
                     </div>
                 </div>
                 <div class="profile-userbuttons">

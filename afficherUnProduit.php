@@ -2,14 +2,25 @@
 session_start();
 $_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
 
-require('./util/panier.php');
+require('./util/users.php');
 
-if(isset($_SESSION['clientID']))
-$clientID = $_SESSION['clientID'];
+$id = null;
+$nom = null;
+$user = null;
+$clientID = null;
+
+if(isset($_SESSION['clientID'])) {
+// Récupérer le nom de l'utilisateur connecté
+    $id = $_SESSION['clientID'];
+    $user = getUserByID($id);  //le nom de l'utilisateur réel
+    $nom = $user['prenom'] . ' ' . $user['nom'];
+    $clientID = $_SESSION['clientID'];
+}
+
 
 
 if (!isset($_GET['produitid'])) {
-    header("Location: index.php"); // Rediriger vers la page d'accueil si aucun produit n'est sélectionné
+    header("Location: index.php");
     exit;
 }
 
@@ -20,7 +31,26 @@ if (!isset($_GET['produitid'])) {
         header("Location: index.php"); // Rediriger vers la page d'accueil si le produit n'existe pas
         exit;
     }
-    
+
+
+// Si l'utilisateur est connecté, on affiche du contenu spécifique ici
+$connectee ='
+         <div class="col-sm-4 offset-md-1 py-4">
+          <h4 class="text-white">'.$nom.'</h4> 
+          <ul class="list-unstyled">
+            <li><a href="deconnexion.php" class="text-white">Se deconnecter</a></li>
+            <li><a href="monProfil.php" class="text-white">Mon Profil</a></li>
+          </ul>
+        </div>';
+
+$NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
+    <h4 class="text-white">Sign in_up</h4>
+    <ul class="list-unstyled">
+      <li><a href="login.php" class="text-white">Se connecter</a></li>
+      <li><a href="inscription.php" class="text-white">M\'inscrire</a></li>
+    </ul>
+  </div>';
+
 ?>
 
 <!doctype html>
@@ -35,66 +65,48 @@ if (!isset($_GET['produitid'])) {
     <title><?=$produit['nom']?></title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 
     <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
-        }
-        
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
-        }
-
-        .bd-mode-toggle {
-            z-index: 1500;
-        }
-        
-        .bd-mode-toggle .dropdown-menu .active .bi {
-            display: block !important;
+        #iciProduit {
+            color: white;
+            border-bottom: solid;
         }
     </style>
   </head>
   <body>
-    
-  <header>
-  <div class="collapse bg-dark" id="navbarHeader">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-8 col-md-7 py-4">
-          <h4 class="text-white">About</h4>
-          <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
-        </div>
-        <div class="col-sm-4 offset-md-1 py-4">
-          <h4 class="text-white">Sign in</h4>
-          <ul class="list-unstyled">
-            <li><a href="login.php" class="text-white">Se connecter</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="navbar navbar-dark bg-dark shadow-sm">
-    <div class="container">
-      <a href="index.php" class="navbar-brand d-flex align-items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        <strong>Mad Shop</strong>
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    </div>
-  </div>
-</header>
+<header>
+  <div class="collapse" id="navbarHeader" >
+      <div class="container">
+          <!-- fait moi un bloc où afficher la langue -->
+          <div class="language-flag">
+              <img src="./images/fr.png" alt="Langue" width="30" height="20">
+          </div>
 
-<main>
+          <div class="row">
+              <div class="col-sm-8 col-md-7 py-4">
+                  <h4 class="text-white" style="color: white">Apropos</h4>
+                  <p class="text-muted">
+                      Mad Shop, votre destination incontournable pour des achats en ligne exceptionnels.
+                      Découvrez une vaste sélection de produits de qualité, des dernières tendances en mode aux gadgets high-tech innovants.
+                      Notre engagement envers la qualité et la satisfaction du client fait de Mad Shop le choix ultime pour vos besoins d'achat en ligne.
+                      Explorez notre boutique et laissez-vous emporter par la folie du shopping en ligne.
+                  </p>
+              </div>
+
+              <?php if(isset($_SESSION['clientID'])) echo $connectee;
+              else echo $NonConnectee; ?>
+          </div>
+      </div>
+  </div>
+
+    <?= include('./includes/monHeader.php'); ?>
+  </header>
+
+
+
+  <main>
   <div class="album py-5 bg-body-tertiary">
     <div class="container">
       <div class="row">
@@ -111,25 +123,27 @@ if (!isset($_GET['produitid'])) {
                 <label for="quantite">Quantité :</label>
                 <input type="number" name="quantite" id="quantite" value="1" min="1">
                 <button type="submit" name="ajouter_panier" class="btn btn-primary bd-mode-toggle" >Ajouter au Panier</button>
-                  <?php
-                        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                            if (!isset($_SESSION['clientID'])) {
-                                header("Location: login.php"); // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
-                                exit;
-                            }
-                            $quantite =$_POST['quantite'];
-                            ajouterAuPanier($clientID, $produitID, $quantite);
-                            echo "<h5 style='color: green'> Produit ajouté </h5>";
-
-                        }
-
-
-                  ?>
               </form>
+                  <?php
+                  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                      if (isset($_SESSION['clientID'])) {
+                          $quantite = $_POST['quantite'];
+                          ajouterAuPanier($clientID, $produitID, $quantite);
+                          echo "<h5 style='color: green'> Produit ajouté </h5>";
+                      } else {
+                          echo "<h5 style='color: red'> Veuillez vous connecter pour ajouter au panier </h5>";
+                          exit;
+                          //header("Location: login.php");
+
+
+                      }
+                  }
+                  ?>
+
               <a href="index.php" class="btn btn-secondary">Retour à la liste des produits</a>
                 <a href="monPanier.php">
 
-                    <img src="./images/icon_panier.png" class="bd-placeholder-img" alt="monPanier" width="60" height="50">
+                    <img src="./images/icon_panier.png" class="bd-placeholder-img" title="Panier" alt="monPanier" width="60" height="50">
                 </a>
             </div>
           </div>
