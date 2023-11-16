@@ -1,0 +1,217 @@
+body {
+    font-size: 16px;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+.language-flag {
+    margin-left: 97%;
+}
+
+.language-flag img {
+    border: 1px solid #ccc; /* Bordure autour du drapeau, optionnel */
+    border-radius: 50%; /* Pour donner une forme de cercle à l'image */
+    cursor: pointer; /* Changement de curseur au survol, optionnel */
+    transition: transform 0.3s ease; /* Transition en douceur pour un effet au survol */
+}
+
+.language-flag img:hover {
+    transform: scale(1.1); /* Effet d'agrandissement au survol */
+}
+
+
+.btn-danger {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+    border-radius:20px
+}
+
+#navbarHeader {
+    background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    font-family: 'Numans', sans-serif;
+}
+
+.navbar {
+    /* background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg'); */
+    background-color: #1c2a42;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    font-family: 'Numans', sans-serif;
+    padding: 15px;
+}
+
+.page_menu_nav {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.page_menu_nav li {
+    margin-right: 15px;
+}
+.page_menu_nav a{
+    text-decoration: none;
+    color: white;
+    text-transform: uppercase;
+    font-size: initial;
+
+}
+
+.page_menu_nav a:hover{
+    text-decoration: none;
+    color: #ffff;
+    border-radius: 20px;
+    background-color: #545659;
+    padding: 10px;
+    border-bottom: solid;
+}
+
+#ici {
+    color: white;
+    border-bottom: solid;
+}
+.page_menu_item.has-children:hover .page_menu_selection {
+    display: block;
+}
+
+.page_menu_selection {
+    display: none;
+    position: absolute;
+    /*background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg'); */
+    background-color: #333333;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.page_menu_selection li {
+    display: block;
+}
+
+#lesCategories a {
+    text-decoration: none;
+    margin-bottom: 5px;
+    padding: 0;
+    list-style-type: none;
+}
+
+/* contenu de la page */
+.deconnexion img {
+    width: 30px;
+    height: 30px;
+}
+
+#produit_image {
+    width: 100%;
+    object-fit: cover;
+}
+
+
+.produit-case {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+.produit-case h3 {
+    text-align: center;
+    font-size: 100%;
+}
+.produit-case p {
+    text-align: center;
+    font-size: 100%;
+}
+
+
+
+/* les écrans de taille moyenne, tels que les tablettes */
+@media (max-width: 992px) {
+    body {
+        font-size: 14px;
+    }
+    .container {
+        width: 90%;
+    }
+    .page_menu_nav {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page_menu_nav li {
+        margin-right: 10px;
+    }
+}
+
+/* les écrans plus petits, tels que les téléphones */
+@media (max-width: 768px) {
+    body {
+        font-size: 12px;
+    }
+
+    .container {
+        width: 100%;
+    }
+    .page_menu_nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .page_menu_nav li {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    .recherche-bloc {
+        width: 90%;
+    }
+
+    .page_menu_selection {
+        width: auto;
+        height: auto;
+        display: none;
+        position: absolute;
+        /*background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg'); */
+        background-color: #333333;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        border-radius: 16px;
+        font-size: 0.5em;
+
+    }
+
+}
+
+@media (min-width: 300px) {
+    .produit-case {
+        width: 32%;
+        height : 50%;
+    }
+    .produit-case p, h3 {
+        font-size: 0.8em;
+    }
+}
+
+@media (min-width: 768px) {
+    .produit-case {
+        width: 32%;
+    }
+    .produit-case p{
+        font-size: 0.8em;
+    }
+}
+
+@media (min-width: 992px) {
+    .produit-case {
+        width: 24%;
+    }
+}

@@ -124,3 +124,22 @@ function getPanierIDByClientID($clientID) {
     }
 }
 
+/**
+ * Fonctions qui permet de retourner le nombre de produits dans le panier d'un client
+ * en donnant son ID
+ */
+
+function getNombreProduitPanier($clientID) {
+    $query = "SELECT COUNT(*) AS nombre_produits FROM produit_panier WHERE panierID = (SELECT panierID FROM panier WHERE clientID = $1)";
+    pg_prepare(connexion(), "get_nombre_produits", $query);
+    $result = pg_execute(connexion(), "get_nombre_produits", array($clientID));
+
+    $nombreProduits= 0;
+    if ($result) {
+        $row = pg_fetch_assoc($result);
+        $nombreProduits = $row['nombre_produits'];
+    }
+        pg_free_result($result);
+        pg_close(connexion());
+        return $nombreProduits;
+}

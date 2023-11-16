@@ -17,8 +17,6 @@ if(isset($_SESSION['clientID'])) {
     $clientID = $_SESSION['clientID'];
 }
 
-
-
 if (!isset($_GET['produitid'])) {
     header("Location: index.php");
     exit;
@@ -34,22 +32,47 @@ if (!isset($_GET['produitid'])) {
 
 
 // Si l'utilisateur est connecté, on affiche du contenu spécifique ici
+// Si l'utilisateur est connecté, on affiche du contenu spécifique ici
 $connectee ='
          <div class="col-sm-4 offset-md-1 py-4">
-          <h4 class="text-white">'.$nom.'</h4> 
-          <ul class="list-unstyled">
-            <li><a href="deconnexion.php" class="text-white">Se deconnecter</a></li>
-            <li><a href="monProfil.php" class="text-white">Mon Profil</a></li>
-          </ul>
+          
+             <div class="profile-sidebar">
+                <div class="profile-userpic">
+                    <!-- la photo de profil de l utilisateur -->
+                    <img src="https://static.thenounproject.com/png/363640-200.png" class="img-responsive" style="color: white" alt="user_image" height="60" width="60">
+                </div>
+                <div class="profile-usertitle">
+                    <div class="profile-usertitle-name">
+                        <h4 class="text-white">'.$nom.'</h4>
+                    </div>
+                    <div class="profile-usertitle-job">
+                        <b class="text-white">Client</b>
+                    </div>
+                </div>
+                <div class="profile-userbuttons">
+                    <a href="monProfil.php" class="btn btn-danger btn-sm">Mon Profil</a>
+                </div>
+             </div>
+             
+             
         </div>';
 
 $NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
-    <h4 class="text-white">Sign in_up</h4>
-    <ul class="list-unstyled">
-      <li><a href="login.php" class="text-white">Se connecter</a></li>
-      <li><a href="inscription.php" class="text-white">M\'inscrire</a></li>
-    </ul>
+      <h4 ><a class="btn btn-danger" href="inscription.php">M\'INSCRIRE</a></h4>
   </div>';
+
+$ajout ="";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_SESSION['clientID'])) {
+        $quantite = $_POST['quantite'];
+        ajouterAuPanier($clientID, $produitID, $quantite);
+        //header("Location: #");
+        $ajout = "<h5 style='color: green'> Produit ajouté </h5>";
+    } else {
+        $ajout = "<h5 style='color: red'> Veuillez vous connecter pour ajouter au panier </h5>";
+
+    }
+}
 
 ?>
 
@@ -67,14 +90,13 @@ $NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
-    <style>
-        #iciProduit {
-            color: white;
-            border-bottom: solid;
-        }
-    </style>
-  </head>
+    <!--Fontawesome CDN-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="./CSS/header.css">
+</head>
   <body>
 <header>
   <div class="collapse" id="navbarHeader" >
@@ -103,9 +125,6 @@ $NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
 
     <?= include('./includes/monHeader.php'); ?>
   </header>
-
-
-
   <main>
   <div class="album py-5 bg-body-tertiary">
     <div class="container">
@@ -118,32 +137,21 @@ $NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
               <p class="card-text"><?= $produit['description'] ?></p>
               <p>Prix: <?= $produit['prix'] ?> €</p>
 
-              <form method="post" >
+              <form method="post" action="#" >
                 <input type="hidden" name="produitID" value="<?= $produitID ?>">
                 <label for="quantite">Quantité :</label>
                 <input type="number" name="quantite" id="quantite" value="1" min="1">
                 <button type="submit" name="ajouter_panier" class="btn btn-primary bd-mode-toggle" >Ajouter au Panier</button>
               </form>
-                  <?php
-                  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                      if (isset($_SESSION['clientID'])) {
-                          $quantite = $_POST['quantite'];
-                          ajouterAuPanier($clientID, $produitID, $quantite);
-                          echo "<h5 style='color: green'> Produit ajouté </h5>";
-                      } else {
-                          echo "<h5 style='color: red'> Veuillez vous connecter pour ajouter au panier </h5>";
-                          exit;
-                          //header("Location: login.php");
+                <br>
+                <?php
+                echo $ajout;
+                ?>
 
-
-                      }
-                  }
-                  ?>
-
-              <a href="index.php" class="btn btn-secondary">Retour à la liste des produits</a>
+                <a href="index.php" class="btn btn-secondary">Retour à la liste des produits</a>
                 <a href="monPanier.php">
 
-                    <img src="./images/icon_panier.png" class="bd-placeholder-img" title="Panier" alt="monPanier" width="60" height="50">
+                    <a href="monPanier.php"><i class="fas fa-shopping-cart fa-3x"></i><strong style="color: red"><?= $nbProd ?></strong></a>
                 </a>
             </div>
           </div>
@@ -156,12 +164,8 @@ $NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
 
 <footer class="text-body-secondary py-5">
   <div class="container">
-    <p class="float-end mb-1">
       <a href="#">Back to top</a>
-    </p>
-    <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-    <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="/docs/5.3/getting-started/introduction/">getting started guide</a>.</p>
-  </div>
+   </div>
 </footer>
 
 

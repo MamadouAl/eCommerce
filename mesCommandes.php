@@ -23,13 +23,10 @@ $historiqueCommandes = getHistoriqueCommandesAvecProduits($clientID);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes Commandes</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link rel="stylesheet" href="./CSS/header.css">  </head>
+    <!--Fontawesome CDN-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
-    <style>
-        #iciCommande {
-            color: white;
-            border-bottom: solid;
-        }
-    </style>
 </head>
 <body>
 <header>

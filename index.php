@@ -6,14 +6,17 @@ $Produits = getAllProduits();
 $id = null;
 $nom = null;
 $user = null;
+$Produits = null;
+$nbProd = 0;
 
 if(isset($_SESSION['clientID'])) {
 // Récupérer le nom de l'utilisateur connecté
 $id = $_SESSION['clientID'];
 $user = getUserByID($id);  //le nom de l'utilisateur réel
 $nom = $user['prenom'] . ' ' . $user['nom'];
+$nbProd = getNombreProduitPanier($_SESSION['clientID']);
 }
-$Produits = null;
+
 if (isset($_GET['query'])) {
     $motCle = $_GET['query'];
     $resultats = rechercheProduit($motCle);
@@ -27,7 +30,7 @@ else{
 }
 
 
-    // Si l'utilisateur est connecté, on affiche du contenu spécifique ici
+// Si l'utilisateur est connecté, on affiche du contenu spécifique ici
     $connectee ='
          <div class="col-sm-4 offset-md-1 py-4">
           
@@ -128,227 +131,13 @@ $NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
-    <style>
-        body {
-            font-size: 16px;
-        }
-
-        .container {
-            width: 80%;
-            margin: 0 auto;
-        }
-        .language-flag {
-            margin-left: 97%;
-        }
-
-        .language-flag img {
-            border: 1px solid #ccc; /* Bordure autour du drapeau, optionnel */
-            border-radius: 50%; /* Pour donner une forme de cercle à l'image */
-            cursor: pointer; /* Changement de curseur au survol, optionnel */
-            transition: transform 0.3s ease; /* Transition en douceur pour un effet au survol */
-        }
-
-        .language-flag img:hover {
-            transform: scale(1.1); /* Effet d'agrandissement au survol */
-        }
+    <!--Fontawesome CDN-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="./CSS/style.css">
 
 
-        .btn-danger {
-            color: #fff;
-            background-color: #dc3545;
-            border-color: #dc3545;
-            border-radius:20px
-        }
-
-        #navbarHeader {
-            background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            height: 100%;
-            font-family: 'Numans', sans-serif;
-        }
-
-        .navbar {
-           /* background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg'); */
-            background-color: #1c2a42;
-            background-size: cover;
-            background-repeat: no-repeat;
-            height: 100%;
-            font-family: 'Numans', sans-serif;
-            padding: 15px;
-        }
-
-        .page_menu_nav {
-            list-style: none;
-            display: flex;
-            margin: 0;
-            padding: 0;
-        }
-
-        .page_menu_nav li {
-            margin-right: 15px;
-        }
-        .page_menu_nav a{
-            text-decoration: none;
-            color: white;
-            text-transform: uppercase;
-            font-size: initial;
-
-        }
-
-        .page_menu_nav a:hover{
-            text-decoration: none;
-            color: #ffff;
-            border-radius: 20px;
-            background-color: #545659;
-            padding: 10px;
-            border-bottom: solid;
-        }
-
-        #ici {
-            color: white;
-            border-bottom: solid;
-        }
-        .page_menu_item.has-children:hover .page_menu_selection {
-            display: block;
-        }
-
-        .page_menu_selection {
-            display: none;
-            position: absolute;
-            /*background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg'); */
-            background-color: #333333;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            z-index: 1;
-            border-radius: 20px;
-            padding: 10px;
-        }
-
-        .page_menu_selection li {
-            display: block;
-        }
-
-        #lesCategories a {
-            text-decoration: none;
-            margin-bottom: 5px;
-            padding: 0;
-            list-style-type: none;
-        }
-
-        /* contenu de la page */
-        .deconnexion img {
-            width: 30px;
-            height: 30px;
-        }
-
-        #produit_image {
-            width: 100%;
-            object-fit: cover;
-        }
-
-
-        .produit-case {
-            width: 100%;
-            height: auto;
-            margin-bottom: 20px;
-        }
-        .produit-case h3 {
-            text-align: center;
-            font-size: 100%;
-        }
-        .produit-case p {
-            text-align: center;
-            font-size: 100%;
-        }
-
-
-
-        /* les écrans de taille moyenne, tels que les tablettes */
-        @media (max-width: 992px) {
-            body {
-                font-size: 14px;
-            }
-            .container {
-                width: 90%;
-            }
-            .page_menu_nav {
-                list-style: none;
-                display: flex;
-                flex-direction: column;
-                margin: 0;
-                padding: 0;
-            }
-
-            .page_menu_nav li {
-                margin-right: 10px;
-            }
-        }
-
-        /* les écrans plus petits, tels que les téléphones */
-        @media (max-width: 768px) {
-            body {
-                font-size: 12px;
-            }
-
-            .container {
-                width: 100%;
-            }
-            .page_menu_nav {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .page_menu_nav li {
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-            .recherche-bloc {
-                width: 90%;
-            }
-
-            .page_menu_selection {
-                width: auto;
-                height: auto;
-                display: none;
-                position: absolute;
-                /*background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg'); */
-                background-color: #333333;
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-                z-index: 1;
-                border-radius: 16px;
-                font-size: 0.5em;
-
-            }
-
-        }
-
-        @media (min-width: 300px) {
-            .produit-case {
-                width: 32%;
-                height : 50%;
-            }
-            .produit-case p, h3 {
-                font-size: 0.8em;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .produit-case {
-                width: 32%;
-            }
-            .produit-case p{
-                font-size: 0.8em;
-            }
-        }
-
-        @media (min-width: 992px) {
-            .produit-case {
-                width: 24%;
-            }
-        }
-
-    </style>
 </head>
 <body>
 <header >
@@ -403,13 +192,11 @@ $NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
                         </ul>
                     </li>
 
-
-                    <li><a href="monPanier.php">Panier</a></li>
-
+                    <li><a href="monPanier.php"><i class="fas fa-shopping-cart fa-3x"></i><strong style="color: red"><?= $nbProd ?></strong></a></li>
 
                     <?php if (isset($_SESSION['clientID'])) : ?>
                         <li><a href="mesCommandes.php">Commandes</a></li>
-                        <li><a href="monProfil.php">Mon profil</a></li>
+                        <li><a href="monProfil.php"><i class="fas fa-user fa-2x"></i></a></li>
                         <li class="deconnexion">
                             <a  href="deconnexion.php" >
                                 <img src="./images/deconnexion.png" alt="deconnexion icon" ">
@@ -442,14 +229,12 @@ $NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
 <main>
     <?php echo $content; ?>
 </main>
+
 <footer class="text-body-secondary py-5">
-  <div class="container">
-    <p class="float-end mb-1">
-      <a href="#">Back to top</a>
-    </p>
-    <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-    <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="/docs/5.3/getting-started/introduction/">getting started guide</a>.</p>
-  </div>
+    <div class="container">
+        <a href="#">Back to top</a>
+    </div>
 </footer>
+
 </body>
 </html>

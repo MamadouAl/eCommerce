@@ -41,8 +41,15 @@ if (isset($_GET['commandeID'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détails de la Commande</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <!--Fontawesome CDN-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="./CSS/header.css">  </head>
+
 </head>
 <body>
+<header>
+    <?= include('./includes/monHeader.php'); ?>
+</header>
 <div class="container mt-5">
     <h1>Détails de la Commande</h1>
     <p>Numéro de Commande : <?= $commandeDetails['commandeid'] ?></p>
