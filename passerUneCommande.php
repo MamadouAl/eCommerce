@@ -44,6 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="./CSS/header.css">  </head>
 
 <title>Récapitulatif de la Commande</title>
+    <style>
+
+    </style>
 </head>
 <body>
 <div class="container">
@@ -70,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     </td>
                     <td><?= $produit['nom'] ?></td>
-                    <td><?= $produit['description'] ?></td>
+                    <td><?= substr($produit['description'], 0, 60) ?>...</td>
                     <td><?= $produit['quantite'] ?></td>
                     <td><?= $produit['prix'] * $produit['quantite']; ?> €</td>
                 </tr>

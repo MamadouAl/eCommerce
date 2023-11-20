@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <img src="<?= $produit['image_url'] ?>" alt="<?= $produit['nom'] ?>" style="max-width: 100px; height: auto;"/></td>
                                             </a>
                                         <td><?= $produit['nom'] ?></td>
-                                        <td><?= $produit['description'] ?></td>
+                                        <td><?= substr($produit['description'], 0, 60) ?>...</td>
                                         <td><?= $produit['prix'] ?> €</td>
 
                                         <td>

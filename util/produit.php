@@ -64,9 +64,7 @@ function addProduit($nom, $description, $prix, $image_url, $categorieID) : ?int 
         $line = pg_fetch_assoc($result);
         $id = $line['produitid'];
     }
-    if (is_a($result, 'PgSql\Result')) {
-        pg_free_result($result);
-    }
+
     pg_free_result($result);
     pg_close(connexion());
     return $id;

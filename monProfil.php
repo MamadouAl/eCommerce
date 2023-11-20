@@ -2,7 +2,6 @@
 session_start();
 // Stockage l'URL actuelle dans une variable de session
 $_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
-
 include './util/users.php';  // Inclure les fonctions pour le panier
 
 if (!isset($_SESSION['clientID'])) {
@@ -19,112 +18,111 @@ $commandes = getCommandesClient($clientID);  // Fonction pour récupérer l'hist
 $panierID = getPanierIDByClientID($clientID);  // Fonction pour récupérer le panier
 
 ?>
+
+
 <!DOCTYPE html>
 <html lang="fr" data-bs-theme="auto">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="MamadouAl">
     <meta name="generator" content="Hugo 0.80.0">
-    <title><?= $user['nom'].' '.$user['prenom'] ?> </title>
+    <title><?= $user['nom'] . ' ' . $user['prenom'] ?></title>
 
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <!--Fontawesome CDN-->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-    <link rel="stylesheet" href="./CSS/header.css">  </head>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./CSS/header.css">
 
+    <style>
+        .container {
+            margin-top: 15px;
+
+        }
+    </style>
 </head>
+
 <body>
 <header>
-    <?php include('./includes/monHeader.php'); //  ?>
-
-    <div style="text-align: center; background-color: darkgrey; margin-top: 0; padding: 20px;">
-        <h1 style="color: chocolate; display: inline;"><?=$user['nom'].' '.$user['prenom']?></h1>
-    </div>
+    <?php include('./includes/monHeader.php'); ?>
 </header>
 
-
-<div class="container">
+<div class="container embed-responsive-16by9">
     <div class="row profile">
-        <div class="col-md-3">
-            <div class="profile-sidebar">
-                <div class="profile-userpic">
-                    <!-- la photo de profil de l'utilisateur -->
-                    <img src="<?= "https://static.thenounproject.com/png/363640-200.png"//$user['photo_url'] ?>" class="img-responsive" alt="">
-                </div>
-                <div class="profile-usertitle">
-                    <div class="profile-usertitle-name">
-                        <?= $user['prenom'] ?> <?= $user['nom'] ?>
-                    </div>
-                    <div class="profile-usertitle-job">
-                        <?php if(isset($_SESSION['admin'])) echo '<b>Admin</b>'; else echo
-                        '<b>Client</b>'
+        <div class="col-md-5">
+            <div class="card">
+                <img src="<?= "https://static.thenounproject.com/png/363640-200.png"//$user['photo_url'] ?>" class="card-img-top" alt="Photo de profil">
+                <div class="card-body">
+                    <h5 class="card-title"><?= $user['prenom'] ?> <?= $user['nom'] ?></h5>
+                    <p><strong>Email:</strong> <?= $user['email'] ?></p>
+
+                    <p class="card-text">
+                        <?php
+                        if (isset($_SESSION['admin'])) {
+                            echo '<b>Admin</b>';
+                        } else {
+                            echo '<b>Client</b>';
+                        }
                         ?>
+                    </p>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-success btn-sm">Follow</button>
+                        <button type="button" class="btn btn-danger btn-sm">Message</button>
                     </div>
                 </div>
-                <div class="profile-userbuttons">
-                    <button type="button" class="btn btn-success btn-sm">Follow</button>
-                    <button type="button" class="btn btn-danger btn-sm">Message</button>
-                </div>
-                <div class="profile-usermenu">
-                    <ul class="nav">
-                        <li class="active">
-                            <a href="index.php">
-                                <i class="glyphicon glyphicon-home"></i>
-                                Accueil
-                            </a>
-                        </li>
-                        <li>
-                            <a href="modifProfil.php">
-                                <i class="glyphicon glyphicon-user"></i>
-                                Modifier mon profil
-                            </a>
-                        </li>
-                        <li>
-                            <a href="mesCommandes.php">
-                                <i class="glyphicon glyphicon-ok"></i>
-                                Mes commandes
-                            </a>
-                        </li>
-                        <li>
-                            <a href="monPanier.php">
-                                <i class="glyphicon glyphicon-flag"></i>
-                                Voir mon panier
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <a href="index.php">
+                            <i class="fas fa-home"></i> Accueil
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="modifProfil.php">
+                            <i class="fas fa-user"></i> Modifier mon profil
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="mesCommandes.php">
+                            <i class="fas fa-check"></i> Mes commandes
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="monPanier.php">
+                            <i class="fas fa-flag"></i> Voir mon panier
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
-        <div class="col-md-9">
-            <div class="profile-content">
-                <h3>Informations du Client</h3>
-                <p>Nom: <?= $user['prenom'] ?> <?= $user['nom'] ?></p>
-                <p>Email: <?= $user['email'] ?></p>
-                <!-- Affichez d'autres informations du client ici -->
 
-                <h3>Historique des Commandes</h3>
+        <div class="col-md-7" style="background-color:#f5f8ff">
+            <div class="profile-content">
+                <h2>Historique de vos commandes</h2><hr>
                 <ul>
                     <?php
                     $historiqueUtilisateur = getHistoriqueCommandesAvecProduits($clientID);
 
-                    if( empty($historiqueUtilisateur) ) {
+                    if (empty($historiqueUtilisateur)) {
                         echo "<p>Vous n'avez pas encore passé de commandes.</p>";
                     }
                     foreach ($historiqueUtilisateur as $commande) :
+                        if (empty($commande['produits'])) {
+                            continue;
+                        }
                         ?>
-                        <li><b> Commande <?= $commande['commandeid'] ?> - Date: <?= $commande['datecommande'] ?></b>
+                        <li>
+                            <strong>Commande du : <i><?= $commande['datecommande'] ?> </i></strong>
                             <ul>
                                 <?php foreach ($commande['produits'] as $produit) : ?>
-                                    <li><a href="afficherUnProduit.php?produitid=<?=$produit['produitid'] ?>">
-                                        <img src="<?= $produit['image_url'] ?>" alt=" <?= $produit['nom'] ?>" style="max-width: 100px; height: auto;"/> </a>
-                                            <?= $produit['nom'] ?>
-                                            - <?= $produit['description'] ?>
-                                            - <?= $produit['prix'] ?>
-
+                                    <li>
+                                        <a href="afficherUnProduit.php?produitid=<?= $produit['produitid'] ?>">
+                                            <img src="<?= $produit['image_url'] ?>" alt="<?= $produit['nom'] ?>" style="max-width: 90px; height: auto;" />
+                                        </a>
+                                        <i><?= $produit['nom'] ?></i> - <?= $produit['prix'] ?>
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
@@ -137,6 +135,10 @@ $panierID = getPanierIDByClientID($clientID);  // Fonction pour récupérer le p
         </div>
     </div>
 </div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 </body>
 
 </html>
+

@@ -78,6 +78,10 @@ body {
     color: white;
     border-bottom: solid;
 }
+#iciProduit {
+    color: white;
+    border-bottom: solid;
+}
 .page_menu_item.has-children:hover .page_menu_selection {
     display: block;
 }

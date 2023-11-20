@@ -101,8 +101,9 @@ $NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
                                 <a href='afficherUnProduit.php?produitid={$produit['produitid']}'>
                                 <img id='produit_image' src='{$produit['image_url']}' alt='{$produit['nom']}'> </a>
                                 <div class='card-body'>
-                                    <p class='card-text'>{$produit['description']}</p>
-                                    <div class='d-flex justify-content-between align-items-center'>
+                                    <p class='card-text'>";
+                                $content .= substr($produit['description'], 0, 150);
+                                    $content .="...</p><div class='d-flex justify-content-between align-items-center'>
                                         <div class='btn-group'>
                                             <a href='afficherUnProduit.php?produitid={$produit['produitid']}'><button type='button' class='btn btn-sm btn-success'>Voir plus</button></a>
                                         </div>

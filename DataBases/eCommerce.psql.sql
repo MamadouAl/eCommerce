@@ -18,6 +18,13 @@ CREATE TABLE client (
     passwd VARCHAR(15) NOT NULL,
     adresseLivraison VARCHAR(255)
 );
+-- Ajout de la colonne reset_passwd
+ALTER TABLE client
+    ADD COLUMN reset_passwd VARCHAR(255);
+
+ALTER TABLE client
+    ALTER COLUMN passwd TYPE VARCHAR(255);
+
 
 -- Table des catégories
 CREATE TABLE categorie (

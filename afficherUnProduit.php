@@ -65,6 +65,11 @@ $ajout ="";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_SESSION['clientID'])) {
         $quantite = $_POST['quantite'];
+        //verifier si le panier existe
+        $panierID = getPanierIDByClientID($clientID);
+        if (!$panierID || $panierID == 0) {
+            $panierID = creePanier($clientID);
+        }
         ajouterAuPanier($clientID, $produitID, $quantite);
         //header("Location: #");
         $ajout = "<h5 style='color: green'> Produit ajouté </h5>";
@@ -88,16 +93,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title><?=$produit['nom']?></title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-
     <!--Fontawesome CDN-->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
     <link rel="stylesheet" href="./CSS/header.css">
 </head>
-  <body>
+<body>
 <header>
   <div class="collapse" id="navbarHeader" >
       <div class="container">
@@ -123,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
   </div>
 
-    <?= include('./includes/monHeader.php'); ?>
+    <?php include('./includes/monHeader.php'); ?>
   </header>
   <main>
   <div class="album py-5 bg-body-tertiary">
@@ -151,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="index.php" class="btn btn-secondary">Retour à la liste des produits</a>
                 <a href="monPanier.php">
 
-                    <a href="monPanier.php"><i class="fas fa-shopping-cart fa-3x"></i><strong style="color: red"><?= $nbProd ?></strong></a>
+                    <a href="monPanier.php"><i class="fas fa-shopping-cart fa-3x"></i><strong style="color: red"><?php if(isset($_SESSION['clientID'])) echo getNombreProduitPanier($_SESSION['clientID']); ?></strong></a>
                 </a>
             </div>
           </div>

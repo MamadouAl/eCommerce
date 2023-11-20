@@ -1,5 +1,4 @@
-<?php $nbProd = getNombreProduitPanier($_SESSION['clientID']);
-?>
+
     <div class="navbar navbar-dark shadow-sm" >
         <div class="container">
             <a href="index.php" class="navbar-brand d-flex align-items-center">
@@ -26,12 +25,12 @@
                     </li>
 
 
-                    <li><a href="monPanier.php"><i class="fas fa-shopping-cart fa-2x"></i><strong style="color: red"><?= $nbProd ?></strong></a></li>
+                    <li><a href="monPanier.php"><i class="fas fa-shopping-cart fa-2x"></i><strong style="color: red"><?php if(isset($_SESSION['clientID'])) echo getNombreProduitPanier($_SESSION['clientID']); ?></strong></a></li>
 
 
                     <?php if (isset($_SESSION['clientID'])) : ?>
                         <li><a id="iciCommande" href="mesCommandes.php">Commandes</a></li>
-                        <li><a href="monProfil.php"><i class="fas fa-user fa-2x"></i></a></li>
+                        <li><a id="iciProfil" href="monProfil.php"><i class="fas fa-user fa-2x"></i></a></li>
                         <li class="deconnexion">
                             <a  href="deconnexion.php" >
                                 <img src="./images/deconnexion.png" alt="deconnexion icon" ">
@@ -54,6 +53,13 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>';
+            ?>
+
+            <?php if($_SESSION['clientID'] && isset($_SESSION['nom']) && isset($_SESSION['prenom']) !== null) {
+                echo '<div >         
+                <h6 style="color: chocolate; display: inline;"><i class="fas fa-user"></i> '.$_SESSION['nom'].' '.$_SESSION['prenom'].'</h6>
+        </div>';
+            }
             ?>
         </div>
     </div>

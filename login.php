@@ -1,28 +1,31 @@
 <?php
-/*
-if (isset($_SESSION['page_avant_login'])) {
-    // Redirigez l'utilisateur vers la page précédente
-    header('Location: ' . $_SESSION['page_avant_login']);
-    exit;
-}
-*/
 session_start();
-require('./util/users.php'); // Inclure votre fichier de fonctions
+require('./util/users.php');
+$connexion = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Récupération des données du formulaire
     $email = $_POST['email'];
     $motDePasse = $_POST['password'];
 
-    if (loginUser($email, $motDePasse)) {
-        $user = getUserByEmail($email);
-        $id=$user['clientid'];
-        $_SESSION['clientID'] = $id;
+    // Obtenez le hachage du mot de passe stocké dans la base de données
+    $user = getUserByEmail($email);
+    $hashedPassword = $user['passwd'];
 
+    // Vérifiez le mot de passe avec password_verify
+    if (password_verify($motDePasse, $hashedPassword)) {
+        // Mot de passe correct
+
+        $id = $user['clientid'];
+        $_SESSION['clientID'] = $id;
+        $_SESSION['nom'] = $user['nom'];
+        $_SESSION['prenom'] = $user['prenom'];
+        $_SESSION['email'] = $user['email'];
+        $connexion = true;
 
         // vérification de l'adresse email de l'administrateur
         $adminEmail = 'tygaaliou@lehavre.fr'; //adresse email de l'administrateur
-        if ($email === $adminEmail) {
+        if ($_SESSION['email'] === $adminEmail) {
             $_SESSION['admin'] = true;
             header("Location: ./admin/admin.php");
             exit;
@@ -35,15 +38,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Redirigez l'utilisateur vers index.php
-        header("Location: index.php?clientID=$id");
+        header("Location: index.php");
         exit;
     } else {
-        // La connexion a échoué, affichez un message d'erreur ou effectuez d'autres actions.
-        echo "La connexion a échoué. Vérifiez vos informations d'identification.";
+        // Mot de passe incorrect
+        $connexion = false;
     }
 }
-
 ?>
+
 
 
 
@@ -60,95 +63,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <!--Fontawesome CDN-->
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-
-<style> 
-
-@import url('https://fonts.googleapis.com/css?family=Numans');
-
-html,body{
-background-image: url('https://getwallpapers.com/wallpaper/full/1/9/d/31242.jpg');
-/*http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg */
-background-size: cover;
-background-repeat: no-repeat;
-height: 100%;
-font-family: 'Numans', sans-serif;
-}
-
-.container{
-    height: 100%;
-    align-content: center;
-}
-
-.card{
-    height: 550px;
-    margin-top: auto;
-    margin-bottom: auto;
-    width: 405px;
-    background-color: rgba(0,0,0,0.5) !important;
-}
-
-.social_icon span{
-    font-size: 60px;
-    margin-left: 10px;
-    color: #FFC312;
-}
-
-.social_icon span:hover{
-    color: white;
-    cursor: pointer;
-}
-
-.card-header h3{
-color: white;
-}
-
-.card-img-top{
-    text-align: center;
-    margin-bottom: 20px;
-    color: white;
-
-}
-
-.social_icon{
-    position: absolute;
-    right: 20px;
-    top: -45px;
-}
-
-.input-group-prepend span{
-    width: 50px;
-    background-color: #FFC312;
-    color: black;
-    border:0 !important;
-}
-
-input:focus{
-/*outline: 0 0 0 0 !important;*/
-box-shadow: 0 0 0 0 !important;
-
-}
-
-.remember{
-color: white;
-}
-
-.remember input
-{
-width: 20px;
-height: 20px;
-margin-left: 15px;
-margin-right: 5px;
-}
+    <link rel="stylesheet" href="./CSS/login.css">
 
 
-.links{
-color: white;
-}
-
-.links a{
-margin-left: 4px;
-}
-</style>
 </head>
 <body>
 <div class="container">
@@ -190,18 +107,24 @@ margin-left: 4px;
 					</div>
 					<div class="form-group">
 						<button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+                    <?php
+                        if (!$connexion) {
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST')
+                            echo '<div class="alert alert-danger" role="alert">
+                            La connexion a échoué. Vérifiez vos informations d\'identification.
+                            </div>';
+                        }
+                    ?>
+
 
 					</div>
 				</form>
+                <div class="d-flex links">
+                    <p>Vous n'avez pas de compte ?<a href="inscription.php">Créer un compte</a></p><br>
+                    <p><a href="resetPasswd.php">Mot de pass oublié ?</a></p>
+                </div>
 			</div>
-			<div class="card-footer">
-				<div class="d-flex justify-content-center links">
-					Vous n'avez pas de compte ?<a href="inscription.php">M\'inscrire</a>
-				</div>
-				<div class="d-flex justify-content-center">
-					<a href="resetPasswd.php">Mot de pass oublié ?</a>
-				</div>
-			</div>
+
 		</div>
 	</div>
 </div>
