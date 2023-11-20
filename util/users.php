@@ -231,8 +231,8 @@ function sendPasswordResetEmail($nom, $email, $resetToken) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'aimy25novembre@gmail.com'; // Remplacez par votre adresse Gmail
-        $mail->Password = 'zkydoepnarbbkwcj'; // Remplacez par votre mot de passe Gmail ou utilisez un mot de passe d'application
+        $mail->Username = 'xxxx@gmail.com'; // Remplacez par votre adresse Gmail
+        $mail->Password = '*************'; // Remplacez par votre mot de passe Gmail ou utilisez un mot de passe d'application
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
 
