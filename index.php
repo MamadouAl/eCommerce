@@ -127,7 +127,7 @@ $NonConnectee = '<div class="col-sm-4 offset-md-1 py-4">
     <meta name="description" content="">
     <meta name="author" content="MamadouAl">
     <meta name="generator" content="Hugo 0.80.0">
-    <title>Home</title>
+    <title>Mad Shop</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 

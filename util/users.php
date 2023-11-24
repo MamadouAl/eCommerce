@@ -3,6 +3,7 @@
  * Fichier de fonctions pour les utilisateurs
  */
 include 'panier.php';
+include './Config/config.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -231,8 +232,8 @@ function sendPasswordResetEmail($nom, $email, $resetToken) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'aimy25novembre@gmail.com'; // Remplacez par votre adresse Gmail
-        $mail->Password = 'zkydoepnarbbkwcj'; // Remplacez par votre mot de passe Gmail ou utilisez un mot de passe d'application
+        $mail->Username = $_ENV['email'];
+        $mail->Password = $_ENV['mot_de_pass'];
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
 
