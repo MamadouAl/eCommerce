@@ -5,10 +5,11 @@ $_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
 require('../util/panier.php');
 
 // Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['clientID'])) {
+if (!isset($_SESSION['clientID']) || empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit;
 }
+
 // Assurez-vous que l'utilisateur est connecté (vous devrez ajouter la gestion de la session).
 $clientID = $_SESSION['clientID'];
 // Récupérez l'ID de la commande à afficher depuis la requête (vous pouvez le transmettre via un paramètre d'URL).

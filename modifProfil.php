@@ -11,17 +11,30 @@ $userId = $_SESSION['clientID'];
 $user = getUserByID($userId);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Récupération des données du formulaire
+// Gestion de l'upload de la photo de profil
+    if (!empty($_FILES["image"]["name"])) {
+        $target_dir = "./images/users/";
+        $target_file = $target_dir . basename($_FILES["image"]["name"]);
+
+// Vérifier si le fichier a été téléchargé avec succès
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+// Mettre à jour le chemin de la photo de profil dans la base de données
+            ajouteProfil_img($userId, $target_file);
+        } else {
+            echo "Une erreur s'est produite lors du téléchargement de votre fichier.";
+        }
+    }
+
+// Récupération des données du formulaire
     $nom = $_POST['nom'];
     $prenom = $_POST['prenom'];
     $email = $_POST['email'];
-    $adresse = $_POST['adresse']; // Changé "addresse" en "adresse"
+    $adresse = $_POST['adresse'];
 
-    // Assurez-vous de valider et échapper les données avant de les utiliser dans une requête SQL.
+// Assurez-vous de valider et échapper les données avant de les utiliser dans une requête SQL.
+    $isModifiee = updateUser($userId, $nom, $prenom, $email, $adresse);
 
-    $isModifiee = updateUser($userId, $nom, $prenom, $email, $adresse); // Changé "$addresse" en "$adresse"
-
-    // Vérification si la modification a réussi
+// Vérification si la modification a réussi
     if ($isModifiee) {
         header("Location: monProfil.php");
         exit;
@@ -30,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -57,7 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="row">
         <div class="col-md-6">
             <h3>Vos Informations</h3>
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="photoProfil" class="form-label">Photo de Profil</label>
+                    <input type="file" class="form-control" id="image" name="image">
+                   <!-- $<input type="submit" value="Télécharger" name="submit"> -->
+                </div>
+
                 <div class="mb-3">
                     <label for="nom" class="form-label">Nom</label>
                     <input type="text" class="form-control" id="nom" name="nom" value="<?php echo $user['nom'] ?>">

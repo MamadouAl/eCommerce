@@ -55,14 +55,18 @@ $panierID = getPanierIDByClientID($clientID);  // Fonction pour récupérer le p
     <div class="row profile">
         <div class="col-md-5">
             <div class="card">
-                <img src="<?= "https://static.thenounproject.com/png/363640-200.png"//$user['photo_url'] ?>" class="card-img-top" alt="Photo de profil">
+                <?php if(isset($user['profil_img']) && !empty($user['profil_img'])) : ?>
+                    <img src="<?= $user['profil_img'] ?>" class="card-img-top" alt="Photo de profil">
+                <?php else : ?>
+                <img src="<?= "https://static.thenounproject.com/png/363640-200.png" ?>" class="card-img-top" alt="Photo de profil">
+                <?php endif; ?>
                 <div class="card-body">
                     <h5 class="card-title"><?= $user['prenom'] ?> <?= $user['nom'] ?></h5>
                     <p><strong>Email:</strong> <?= $user['email'] ?></p>
 
                     <p class="card-text">
                         <?php
-                        if (isset($_SESSION['admin'])) {
+                        if (($_SESSION['role'] === 'admin' )) {
                             echo '<b>Admin</b>';
                         } else {
                             echo '<b>Client</b>';
@@ -70,8 +74,12 @@ $panierID = getPanierIDByClientID($clientID);  // Fonction pour récupérer le p
                         ?>
                     </p>
                     <div class="d-grid gap-2">
+                        <?php if (($_SESSION['role'] === 'admin' )) : ?>
+                            <a href="admin/admin.php" class="btn btn-danger btn-sm">Administration</a>
+                        <!--<button type="button" href="admin/admin.php" class="btn btn-danger btn-sm">Administration</button>
+                        --><?php endif; ?>
                         <button type="button" class="btn btn-success btn-sm">Follow</button>
-                        <button type="button" class="btn btn-danger btn-sm">Message</button>
+
                     </div>
                 </div>
                 <ul class="list-group list-group-flush">

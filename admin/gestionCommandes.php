@@ -3,7 +3,7 @@ session_start();
 include '../util/users.php';
 
 // Assurez-vous que l'utilisateur est connecté en tant qu'administrateur
-if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
+if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin'){
     header("Location: login.php");
     exit;
 }

@@ -4,7 +4,7 @@ $_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
 require '../util/users.php';
 
 // Vérifiez si l'utilisateur est connecté est un admin
-if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
 }

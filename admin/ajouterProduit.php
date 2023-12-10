@@ -4,26 +4,36 @@ $_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
 
 include '../util/users.php';
 
-$id =1;
-if(!isset($_SESSION['admin']) ) //admin
+if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin')
 {
     header("Location: ../login.php");
 }
 
-if(empty($_SESSION['admin']))
-{
-    header("Location: ../login.php");
-}
 $clientID =$_SESSION['clientID'];
 $admin = getUserByID($clientID);
+$image_url ="vide";
 
 $categories = getAllCategories();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Gestion de l'upload de la photo de profil
+    if (!empty($_FILES["image"]["name"])) {
+        $target_dir = "../images/produits/";
+        $target_file = $target_dir . basename($_FILES["image"]["name"]);
+
+// Vérifier si le fichier a été téléchargé avec succès
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+// Mettre à jour le chemin de la photo de profil dans la base de données
+            $image_url = $target_file;
+        } else {
+            echo "Une erreur s'est produite lors du téléchargement de votre fichier.";
+        }
+    }
+
+    // Récupération des données du formulaire
     $nom = $_POST['nom'];
     $description = $_POST['description'];
     $prix = (float)$_POST['prix']; // Conversion en float
-    $image_url = $_POST['image'];
     $categorieID = (int)$_POST['categorieID']; // Conversion en int
 
     try {
@@ -36,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "Problème : " . $e->getMessage();
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -78,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="album py-5 bg-light">
     <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="categorieID">Sélectionnez une catégorie :</label>
                     <select id="categorieID" name="categorieID">
@@ -100,9 +111,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="prix" class="form-label">Prix</label>
                     <input type="number" class="form-control" name="prix" step="0.01" required>
                 </div>
+
                 <div class="mb-3">
                     <label for="image" class="form-label">L'image du produit</label>
-                    <input type="text" class="form-control" name="image" required>
+                    <input type="file" class="form-control" name="image">
                 </div>
                 <button type="submit" name="valider" class="btn btn-primary">Ajouter un nouveau produit</button>
             </form>

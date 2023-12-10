@@ -118,3 +118,20 @@ function deleteProduit($produitID) : void {
     pg_query(connexion(), $query);
     pg_close(connexion());
 }
+
+//fonction qui ajoute une image de produit
+function addImage($produitID, $image_url) : void {
+    $query = "UPDATE produit SET image_url = '$image_url' WHERE produitID = '$produitID'";
+    pg_query(connexion(), $query);
+    pg_close(connexion());
+}
+
+//fonction qui retourne le nombre de produits
+function countProduits() : int {
+    $query = "SELECT COUNT(*) FROM produit";
+    $result = pg_query(connexion(), $query);
+    $count = pg_fetch_row($result)[0];
+    pg_free_result($result);
+    pg_close(connexion());
+    return $count;
+}

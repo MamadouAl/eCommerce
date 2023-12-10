@@ -5,8 +5,7 @@ $_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
 
 include '../util/users.php';
 
-if(!isset($_SESSION['admin']) OR empty($_SESSION['admin'])) //admin
-{
+if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin'){
     header("Location: ../login.php");
 }
 
@@ -23,12 +22,25 @@ $categorieID= $produit['categorieid'];
 $categories = getAllCategories();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $image_url = $produit['image_url'];
+// Gestion de l'upload de la photo de profil
+    if (!empty($_FILES["image"]["name"])) {
+        $target_dir = "../images/produits/";
+        $target_file = $target_dir . basename($_FILES["image"]["name"]);
 
+// Vérifier si le fichier a été téléchargé avec succès
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+// Mettre à jour le chemin de la photo de profil dans la base de données
+            $image_url = $target_file;
+        } else {
+            echo "Une erreur s'est produite lors du téléchargement de votre fichier.";
+        }
+    }
         
     $nom = $_POST['nom'];
     $description = ($_POST['desc']);
     $prix = (float)$_POST['prix']; // Conversion en float
-    $image_url = $_POST['image'];
+    //$image_url = $_POST['image'];
     $categorieID = (int)$_POST['categorieID']; 
 
     $produitID = $_GET['id'];
@@ -92,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
    
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="categories">Selectionnez une categorie</label>
             <select id="categorieID" name="categorieID">
@@ -112,11 +124,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="mb-3">
             <label for="prix" class="form-label">Prix</label>
-            <input type="number" class="form-control" name="prix" value="<?= $produit['prix'] ?>" required/>        </div>
-        <div class="mb-3">
-            <label for="image" class="form-label">L'image du produit</label>
-            <input type="name" class="form-control" name="image" value="<?= $produit['image_url'] ?>" required/>
+            <input type="number" class="form-control" name="prix" value="<?= $produit['prix'] ?>" required/>
         </div>
+        <div class="mb-3">
+            <label for="image" class="form-label">L'image actuelle du produit</label>
+            <img src="<?= $produit['image_url'] ?>" alt="image du produit" width="100" height="100">
+        </div>
+        <div class="mb-3">
+            <label for="image" class="form-label">Nouvelle image</label>
+
+            <input type="file" class="form-control" name="image" />
+        </div>
+
+
         <button type="submit" name="valider" class="btn btn-success">Enregistrer</button>
         
         <button type="button" class="btn btn-success" style="background :red;" onclick="annulerFormulaire()">Annuler</button>

@@ -4,13 +4,10 @@ $_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
 include '../util/users.php';
 
 // Vérifiez si l'utilisateur est connecté est un admin
-if (!isset($_SESSION['admin'])) {
+if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
 }
 
-if (empty($_SESSION['admin'])) {
-    header("Location: ../login.php");
-}
 
 $clientID = $_SESSION['clientID'];
 $admin = getUserByID($clientID);

@@ -4,7 +4,7 @@ $_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
 
 include '../util/users.php';
 
-if(!$_SESSION['admin'] or empty($_SESSION['admin'])){ //admin
+if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin'){
     header("Location: ../login.php");
 }
 $clientID =$_SESSION['clientID'];

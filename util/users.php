@@ -3,7 +3,7 @@
  * Fichier de fonctions pour les utilisateurs
  */
 include 'panier.php';
-include './Config/config.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -221,6 +221,7 @@ function savePasswordResetToken($userID, $resetPass) : void {
  * @return string Message de confirmation
  */
 function sendPasswordResetEmail($nom, $email, $resetToken) {
+    require './Config/config.php';
     require './phpmailer/phpmailer/src/Exception.php';
     require './phpmailer/phpmailer/src/PHPMailer.php';
     require './phpmailer/phpmailer/src/SMTP.php';
@@ -286,3 +287,22 @@ function verifToken($resetToken) {
     return null;
 }
 
+/**
+ * Ajoutez l'URL de la photo de profil dans la base de données
+ * @param $userId
+ * @param $photoProfilPath
+ */
+function ajouteProfil_img($userId, $photoProfilPath) {
+    $sql = "UPDATE client SET profil_img = $2 WHERE clientID = $1";
+    pg_prepare(connexion(), "addPhoto", $sql);
+    pg_execute(connexion(), "addPhoto", array($userId, $photoProfilPath));
+    pg_close(connexion());
+}
+
+//fonctions qui change le role d'un utilisateur
+function changeRole($userID, $role) : void {
+    $query = "UPDATE client SET role = $2 WHERE clientID = $1";
+    pg_prepare(connexion(), "changerole", $query);
+    pg_execute(connexion(), "changerole", array($userID, $role));
+    pg_close(connexion());
+}

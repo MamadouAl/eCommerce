@@ -4,7 +4,7 @@ $_SESSION['page_avant_login'] = $_SERVER['REQUEST_URI'];
 
 require('../util/users.php'); // Inclure votre fichier de fonctions pour les catégories
 
-if (!isset($_SESSION['admin'])) {
+if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin'){
     header("Location: ../login.php");
 }
 

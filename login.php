@@ -21,12 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['nom'] = $user['nom'];
         $_SESSION['prenom'] = $user['prenom'];
         $_SESSION['email'] = $user['email'];
+        $_SESSION['role'] = $user['role'];
         $connexion = true;
 
         // vérification de l'adresse email de l'administrateur
-        $adminEmail = 'tygaaliou@lehavre.fr'; //adresse email de l'administrateur
-        if ($_SESSION['email'] === $adminEmail) {
-            $_SESSION['admin'] = true;
+        if ($_SESSION['role'] === 'admin') {
             header("Location: ./admin/admin.php");
             exit;
         }
