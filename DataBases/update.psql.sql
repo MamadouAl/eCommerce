@@ -4,7 +4,7 @@
 ALTER TABLE client
     ADD COLUMN profil_img VARCHAR(255);
 ALTER TABLE client
-    ADD COLUMN telephone INTEGER NOT NULL
+    ADD COLUMN telephone INTEGER NOT NULL;
 
 --ajout un role pour le client (admin ou user)
 ALTER TABLE client

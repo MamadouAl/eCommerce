@@ -60,6 +60,12 @@ if (isset($_GET['commandeID'])) {
         </tr>
         </thead>
         <tbody>
+        <?php if (empty($produitsCommande)) : ?>
+            <tr>
+                <td colspan="3">Aucune produit trouvé.</td>
+            </tr>
+        <?php endif; ?>
+
         <?php foreach ($produitsCommande as $produit) : ?>
             <tr>
                 <td><?= $produit['nom'] ?></td>

@@ -35,6 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = $_POST['description'];
     $prix = (float)$_POST['prix']; // Conversion en float
     $categorieID = (int)$_POST['categorieID']; // Conversion en int
+    //supprimer le premier caractère de la chaine de caractère
+    $image_url = substr($image_url, 1);
 
     try {
         $produitID = addProduit($nom, $description, $prix, $image_url, $categorieID);

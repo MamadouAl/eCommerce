@@ -14,6 +14,7 @@ $admin = getUserByID($clientID);
 
 $produits = getAllProduits();
 
+
 ?>
 
 <!DOCTYPE html>
@@ -80,7 +81,14 @@ $produits = getAllProduits();
                     <tr>
                         <th scope="row"><?= $produit['produitid'] ?></th>
                         <td>
-                            <img src="<?= $produit['image_url'] ?>" alt="<?= $produit['nom'] ?>" style="width: 25%">
+                            <img src="<?php //si la chaine commence par http ou https, on ne fait rien
+                            if (preg_match('/^https?:\/\//', $produit['image_url'])) {
+                                echo $produit['image_url'];
+                            } else {
+                                echo "." . $produit['image_url'];
+                            }
+
+                             ?>" alt="<?= $produit['nom'] ?>" style="width: 25%">
                         </td>
                         <td><?= $produit['nom'] ?></td>
                         <td style="font-weight: bold; color: green;"><?= $produit['prix'] ?>€</td>

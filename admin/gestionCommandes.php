@@ -9,7 +9,6 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin'){
 }
 
 if (!isset($_GET['clientID'])) {
-
     echo "L'clientID n'est pas spécifié.";
 }
 // Récupérez les commandes spécifiques à cet utilisateur
@@ -20,15 +19,29 @@ if (isset($_POST['update_status'])) {
     $commandeID = $_POST['commandeID'];
     $nouveauStatut = $_POST['nouveau_statut'];
     updateCommandeStatut($commandeID, $nouveauStatut);
+
+    //envoyer un email au client
+    $commande = getCommandeDetails($commandeID);
+    $client = getUserByID($clientID);
+    $envoyerA = $client ['email'];
+    $objet = "STATUT DE VOTRE COMMANDE MIS A JOUR";
+    $message = "<html lang='fr'>
+                    <body>
+                        <p>Bonjour ".$client['nom']." ".$client['prenom'].", <br><br>
+                        Nous vous informons que le statut de votre commande ".$commandeID." datant du <b>".$commande['datecommande']."</b> a été mis à jour.</p>
+                        <p>Le nouveau statut de votre commande est: <b>".$nouveauStatut."</b><br>
+                        Vous pouvez consulter les détails de votre commande en vous connectant à votre compte sur notre site Web.</p>
+                        <p>Cordialement,<br>
+                        Le service clientèle de la boutique en ligne
+                        </p>
+                    </body>
+                </html>";
+
+    envoiEmail($client['prenom']." ".$client['nom'], $envoyerA, $objet, $message);
 }
 
 $commandes = getCommandesClient($clientID);
 $users = getUserByID($clientID);
-
-
-// Récupérez les commandes depuis la base de données
-//$commandes = getAllCommandes();
-//print_r($commandes);
 
 ?>
 <!DOCTYPE html>
@@ -73,6 +86,12 @@ $users = getUserByID($clientID);
         </tr>
         </thead>
         <tbody>
+        <?php if (empty($produitsCommande)) : ?>
+            <tr>
+                <td colspan="3">Aucune Commande trouvée.</td>
+            </tr>
+        <?php endif; ?>
+
         <?php foreach ($commandes as $commande): ?>
             <tr>
                 <td><?= $commande['commandeid'] ?></td>
@@ -124,5 +143,3 @@ $users = getUserByID($clientID);
 </div>
 </body>
 </html>
-';
-}

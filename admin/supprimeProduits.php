@@ -10,19 +10,20 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin'){
 $clientID =$_SESSION['clientID'];
 $admin = getUserByID($clientID);
 
-
+$deleted =null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['valider']) && isset($_POST['idproduit'])) {
         $idproduit = htmlspecialchars(strip_tags($_POST['idproduit']));
         if (!empty($idproduit) && is_numeric($idproduit)) {
             try {
                 $result = deleteProduit($idproduit);
-                if ($result) {
+                if ($result === true) {
                     // La suppression a réussi
-                    header("Location: supprimeProduits.php"); // Redirection vers la page de suppression
+                    //header("Location: #"); // Redirection vers la page de suppression
+                    $deleted = true;
                 } else {
                     // La suppression a échoué
-                    echo "La suppression du produit a échoué.";
+                    $deleted = false;
                 }
             } catch (Exception $e) {
                 echo $e->getMessage();
@@ -37,7 +38,7 @@ $Produits = getAllProduits();
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
@@ -86,16 +87,34 @@ $Produits = getAllProduits();
                 <button type="submit" name="valider" class="btn btn-primary">Supprimer le produit</button>
             </form>
         </div>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        <?php
+        if($deleted) {
+            echo '  <div class="alert alert-success" role="alert">
+                        <h3 style="color: green">Produit supprimé avec succès !</h3>
+                        </div>';
+        }else if($deleted === false)
+            echo '  <div class="alert alert-danger" role="alert">
+                        <h3 style="color: red">La suppression a échoué !</h3>
+                        </div>';
+        ?>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3">
             <?php foreach ($Produits as $produit): ?>
                 <div class="col">
                     <div class="card shadow-sm">
-                        <img src="<?= $produit['image_url'] ?>"/>
+                        <img src="<?php //si la chaine commence par http ou https, on ne fait rien
+                        if (preg_match('/^https?:\/\//', $produit['image_url'])) {
+                            echo $produit['image_url'];
+                        } else {
+                            echo "." . $produit['image_url'];
+                        }
+
+                        ?>" alt="<?= $produit['nom'] ?>" style="width: 70%">
                         <h3><?= $produit['produitid'] ?></h3>
                         <div class="card-body">
                             <!-- Ajoutez ici les détails du produit -->
                             <p>Nom: <?= $produit['nom'] ?></p>
-                            <p>Description: <?= $produit['description'] ?></p>
+                            <p><?php print(substr($produit['description'], 0, 100)); ?>...</p>
+
                             <p>Prix: <?= $produit['prix'] ?> €</p>
                             <!-- Fin des détails du produit -->
                         </div>

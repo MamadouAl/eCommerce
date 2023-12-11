@@ -41,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = ($_POST['desc']);
     $prix = (float)$_POST['prix']; // Conversion en float
     //$image_url = $_POST['image'];
-    $categorieID = (int)$_POST['categorieID']; 
-
+    $categorieID = (int)$_POST['categorieID'];
+    $image_url = substr($image_url, 1);
     $produitID = $_GET['id'];
 
     try 

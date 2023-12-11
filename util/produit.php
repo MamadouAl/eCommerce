@@ -111,13 +111,52 @@ function updateProduit($productID, $nom, $description, $prix, $image_url,  $cate
 /**
  * Cette fonction permet de supprimer un produit.
  * @param $produitID
- * @return bool|resource
+ * @return bool
  */
-function deleteProduit($produitID) : void {
-    $query = "DELETE FROM produit WHERE produitID = '$produitID'";
-    pg_query(connexion(), $query);
-    pg_close(connexion());
+function deleteProduit($produitID): bool {
+    // Vérifier si le produit existe dans la table produit
+    $query = "SELECT count(*) FROM produit WHERE produitID = $1";
+    pg_prepare(connexion(), "check", $query);
+    $result = pg_execute(connexion(), "check", array($produitID));
+
+    if ($result !== false) {
+        $count = pg_fetch_row($result)[0];
+        pg_free_result($result);
+
+        if ($count > 0) {
+            // Supprimer le produit des commandes dans la table produit_commande
+            $query = "DELETE FROM produit_commande WHERE produitID = $1";
+            pg_prepare(connexion(), "delete1", $query);
+            pg_execute(connexion(), "delete1", array($produitID));
+
+            // Supprimer le produit de la table produit
+            $query = "DELETE FROM produit WHERE produitID = $1";
+            pg_prepare(connexion(), "delete2", $query);
+            $result = pg_execute(connexion(), "delete2", array($produitID));
+
+            if ($result !== false) {
+                pg_free_result($result);
+                pg_close(connexion());
+                return true;
+            } else {
+                // La suppression du produit de la table produit a échoué
+                // Gérer l'erreur ici si nécessaire
+                return false;
+            }
+        } else {
+            // Le produit avec cet ID n'existe pas
+            // Gérer le cas où l'ID n'est pas valide
+            return false;
+        }
+    } else {
+        // La requête de vérification a échoué
+        // Gérer l'erreur ici si nécessaire
+        return false;
+    }
 }
+
+
+
 
 //fonction qui ajoute une image de produit
 function addImage($produitID, $image_url) : void {

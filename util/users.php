@@ -287,6 +287,45 @@ function verifToken($resetToken) {
     return null;
 }
 
+function envoiEmail($nom, $email, $objet, $message) {
+    include '../Config/config.php';
+    require '../phpmailer/phpmailer/src/Exception.php';
+    require '../phpmailer/phpmailer/src/PHPMailer.php';
+    require '../phpmailer/phpmailer/src/SMTP.php';
+
+    try {
+        // Création d'une instance de PHPMailer
+        $mail = new PHPMailer(true);
+
+        // Configuration du serveur SMTP
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = $_ENV['email'];
+        $mail->Password = $_ENV['mot_de_pass'];
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+
+        // Destinataire et expéditeur
+        $mail->setFrom('mamadoual@madal.fr', 'no-reply'); // Exepediteur du mail
+        $mail->addAddress($email, $nom); // Destinataire
+
+        // Contenu de l'e-mail
+        $mail->isHTML(true);
+        $mail->Subject = $objet;
+        $mail->Body = $message;
+
+        // Envoi de l'e-mail
+        $mail->send();
+
+        // Message de confirmation
+        $confirmationMessage = "Un e-mail a été envoyé à $email.";
+        return $confirmationMessage;
+    } catch (Exception $e) {
+        return 'Une erreur s\'est produite lors de l\'envoi de l\'e-mail : ' . $mail->ErrorInfo;
+    }
+}
+
 /**
  * Ajoutez l'URL de la photo de profil dans la base de données
  * @param $userId
